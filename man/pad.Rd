@@ -1,6 +1,7 @@
 \name{pad}
 \alias{pad}
 \title{Pad a vector of numerical string with zeros.}
+\author{Jeremy Tantrum}
 \description{
 This function helps to pad numbers on the left side with zeros so that 
 they may be used to create strings used in filesystem names (for example). 

@@ -6,7 +6,7 @@ makeElipseCoords <- function(x0 = 0, y0 = 0, b = 1, a = 1, alpha = 0, pct.range 
   theta <- seq(rad.range[1], rad.range[2], length=(len))
   x <- x0 + a * cos(theta) * cos(alpha) - b * sin(theta) * sin(alpha)
   y <- y0 + a * cos(theta) * sin(alpha) + b * sin(theta) * cos(alpha)
-  cbind(x,y)
+  return(tab2df(cbind(x,y)))
 }
 
 
