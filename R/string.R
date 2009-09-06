@@ -31,27 +31,3 @@ m <- function(pattern, vect, names="V", types="character"){
 }
 
 
-truncPath <- function(path, limit=256, min.length=15){
-    n.char.path <- nchar(path)
-    if(n.char.path > limit){
-        print (paste("Path name length of",n.char.path,"is too long."))
-        filename <- basename(path)
-        directory <- paste(dirname(path),"/",sep="")
-        nchardir <- nchar(directory)
-        ncharfile <- nchar(filename)
-        ncharfile.new <- ncharfile - (n.char.path - limit)
-        ncharstart <- ncharfile - ncharfile.new
-        if(nchardir < (limit - min.length)){
-            truncd.path <- paste(directory, substr(filename, ncharstart ,ncharfile), sep='')
-            print (paste("truncating first", ncharstart ,"characters of the file name"))
-            return(truncd.path )
-        }else{
-            print (paste("Directory name length of",nchardir,"exceedes limit. Can't truncate path: \n",path))
-            return(NULL)
-        }
-    }else{
-        return(path)
-    }
-}
-
-

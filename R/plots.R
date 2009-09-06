@@ -31,7 +31,6 @@ plotClock <- function(hour, minute, title, x0 = 0, y0 = 0, r = 1){  #ampm = "not
 }
 
 
-
 ### a better pie function with origin positions ###
 pies <- function(x, show.labels = FALSE, show.slice.labels = FALSE, color.table = NULL, 
 		radii = 1, x0=NULL, y0=NULL, xlim=c(-1,1), ylim=c(-1,1),
@@ -42,12 +41,21 @@ pies <- function(x, show.labels = FALSE, show.slice.labels = FALSE, color.table 
   
   if(class(x)!='list')
     stop("x must be a list")
+  
   if(length(x) != length(x0) | length(x0) != length(y0))
     stop(paste("x0 and y0 lengths (",length(x0),',',length(y0),") must match length of x (",length(x),")", sep=''))
   
   if(length(radii) < length(x))
     radii <- rep(radii, length.out=length(x))
-  radii <- radii/16 # rescale to pch=1 cex=1 
+  
+  ## calculate the char size to pie radius conversions
+  cx <- .25 * par('cxy')[1]
+  cy <- .19 * par('cxy')[2]
+  # old -> * (par('csi')/par('pin')[2]) * diff(ylim) * .2 # inches to coords scaling
+  
+  radii <- radii  
+  y2x.asp <- diff(xlim)/diff(ylim)
+
   pie.labels <- names(x)
 
   if (is.null(color.table)) {
@@ -93,7 +101,7 @@ pies <- function(x, show.labels = FALSE, show.slice.labels = FALSE, color.table 
     ## function to turn theta into xy coordinates
     t2xy <- function(t) {
         t2p <- twopi * t + init.angle * pi/180
-        list(x = radii[j] * cos(t2p), y =  radii[j] * sin(t2p))
+        list(x = radii[j] *cx * cos(t2p), y =  radii[j] * cy * sin(t2p)) #y
     }
 
     ## loop through each slice of the pie
@@ -236,3 +244,7 @@ violins <- function (x, range = 1.5, h = NULL, ylim = NULL, names = NULL,
     invisible(list(upper = upper, lower = lower, median = med, 
         q1 = q1, q3 = q3))
 }
+
+
+
+
