@@ -32,232 +32,9 @@ plotClock <- function(hour, minute, title, x0 = 0, y0 = 0, r = 1){  #ampm = "not
 
 
 
-plotRA <- function(x, subgroups=NULL, weights=NULL, prob=0.5, sig.lines=TRUE, asymp.lines=TRUE, epsilon=NULL, plot=TRUE ){
-
-  ##################
-  ## CREATE TABLE ##
-  ##################
-  ## CHECK 'subgroups' and 'weights' ARGUMENTS ##
-  if(!is.null(subgroups)){
-    if(class(subgroups) == 'list'){
-      subgroup.list <- subgroups
-    }else{
-      stop("ERROR: subgroup must either be passed as a list or attached as a factor to x")
-    }
-  }
-  if(!is.null(weights)){
-    if(class(weights) != 'numeric'){
-      stop("ERROR: these weights must be a passed as a numeric vector.")
-    }
-  }
-
-  ## CHECK main 'x' ARGUMENT (either a dataframe or a matrix) ##
-  if(class(x) == 'data.frame'){
-    
-    if(all(  names(x) %in% c('treatment', 'group','subgroup','weight'))){
-      if(ncol(x) >= 2){
-
-        x$treatment <- as.factor(x$treatment)
-        x$group     <- as.factor(x$group)
-        x$subgroup  <- as.factor(x$subgroup)
-        
-        if(nlevels(x$treatment) != 2){
-          stop("ERROR: your treatment column needs to have exactly 2 levels")
-        }
-        ## CROSS TABULATE data.frame into treatments vs groups ## 
-        count.tab <- as.table(by(x, list(x$group, x$treatment), nrow ))  
-        
-        ## handle the optional subgroup and weight columns of x 
-        if(!is.null(x$subgroup)){
-          if(!is.null(subgroups)){            
-            stop("ERROR: you've specifed subgroups in both dataframe x and the subgroup param")
-          }else{
-            subgroup.list <- by(x, x$group, function(x) x$subgroup)
-          }
-        }
-        if(!is.null(x$weight)){
-          if(!is.null(weights)){            
-            stop("ERROR: you've specifed weights in both dataframe x and the weights param")
-          }else{
-            weights <- as.vector(by(x$weight, x$group, mean))
-          }
-        }
-                
-      }else{
-        print('ERROR: Need 2 columns (treatment & group) for dataframes. Convert to a (treatment) vector?')        
-        return(FALSE)
-      }
-    }else{
-      count.tab <- x  #just pass it on and check it out later
-    }
-    
-  }else if(class(x) == 'table'){
-    count.tab <- x    
-  }else{
-    stop("x must be either a dataframe or a matrix")
-  }
-
-
-
-  ## CHECK integerity of the table ## 
-  if(class(count.tab[,1]) != 'integer' | class(count.tab[,1]) != 'integer')
-    stop("ERROR: your matrix must be integer counts")
-  if(!all(count.tab > 0, na.rm=TRUE))
-    stop("ERROR: your matrix must be entirely postive numbers")
-  if(ncol(count.tab) != 2)
-    stop("ERROR: your matrix must have two columns (one for each treatment)")  
-        
-
-  ## CONVERT table it to a dataframe ##
-  count.df <- tab2df(count.tab)
-  treat.names <- names(count.df)
-  
-
-  ## CHECK dimentions of optional 'subgroup' and 'weight'  (combine with upper checks)
-  if(!is.null(subgroups)){
-    if(length(subgroups) != nrow(count.df)){
-      stop("ERROR: Your subgroups list length doesn't match your count table row count.")      
-    }
-  }
-  if(!is.null(weights)){
-    if(length(weights) != nrow(count.df)){
-      stop("ERROR: Your weights vector length doesn't match your count table row count.")
-    }else if(!(range(weights)[1] >= 0 & range(weights)[2] <= 10^10)){
-      stop("ERROR: your weights vector is not > 0")
-    }else if(abs(1-mean(weights))>.1){
-      stop("ERROR: your weights vector doesn't average to 1")
-    }else{
-      count.df$weight <- weights
-      ## be sure to back up the original counts before we decimalize them
-      count.df[,paste(treat.names[1],'ct',sep='.')] <- count.df[,treat.names[1]]
-      count.df[,paste(treat.names[2],'ct',sep='.')] <- count.df[,treat.names[2]]
-      
-    }
-  }else{
-    count.df$weight <- 1
-  }
-
-  count.df$n <- apply(count.df[,treat.names], 1, sum)
-  count.df$max  <- apply(count.df[,treat.names], 1, max)
-  count.df[,treat.names] <- count.df[,treat.names] * count.df$weight
-
-  avg.log <- function(a,b){
-    return((log(a,2)+log(b,2))/2)
-  }
-  
-  
-  count.df$ratio <- log(count.df[,treat.names[1]]/count.df[,treat.names[2]], 2)
-  ##count.df[!is.inf(count.df$ratio)] 
-  count.df$average <- avg.log(count.df[,treat.names[1]], count.df[,treat.names[2]]) 
-
-
-  if(!plot){  
-    return(count.df)
-  }else{
-
-      ## remove the non bi-treatment represented
-    if(!is.null(epsilon)){
-      count.df[,treat.names] <- count.df[,treat.names] + epsilon
-    }else{
-      non.bi.treatment.represented <- as.logical(!apply(sapply(count.df, is.na),1,sum))
-      count.df <- count.df[non.bi.treatment.represented,]
-      subgroup.list <- subgroup.list[non.bi.treatment.represented]
-    }
-
-    ##########
-    ## PLOT ##
-    ##########
-
-    if(!is.null(weights)){
-      weight.label <- 'Weighted '
-    }else{
-      weight.label <- ''
-    }
-    if(!is.null(subgroup.list)){
-      PCHs <- '.'  #better compliment to pie graph points
-    }else{
-      PCHs <- 1
-    }
-    
-    xl <- range(count.df$average)+c(-1,1)
-    yl <- range(count.df$ratio)+c(-1,1)
-    
-    plot(count.df$average, count.df$ratio,
-         ylab=paste(weight.label,"Count Ratio: log2(",treat.names[1],"/",treat.names[2],")", sep=''),
-         xlab=paste(weight.label,"Count Average:\n(log2(",treat.names[1],")+log2(",treat.names[2],"))/2", sep=''),
-         main=paste("RA plot"), pch=PCHs, xlim=xl, ylim=yl)
-
-
-       
-    ## add ASSYMPTOTES
-    if(asymp.lines){
-      a <- .9
-      b <- 1:100
-      lines(avg.log(a,b), log(a/b,2))
-      lines(avg.log(a,b), -log(a/b,2))
-    }
-      
-    ## add CONFIDENCE INTERVAL lines
-    
-    if(sig.lines){
-      ns <- round(seq(range(count.df$n)[1],range(count.df$n)[2]+10))
-      sigs <- c(0.05, 0.01, 0.001, 0.5)
-      sig.cols <- c(1,1,1,1)
-      sig.ltys <- c(1,2,3,1)
-      sig.lwds <- c(1,1,1,2) 
-      for(i in seq(along=sigs)){
-        
-        a <- qbinom(p=sigs[i], size=ns, prob=prob)
-        b <- qbinom(p=1-sigs[i], size=ns, prob=prob)
-
-        if(!is.null(epsilon)){
-          a <- a + epsilon
-          b <- b + epsilon
-        }else{
-          non.zero <- a!=0 & b!=0
-          a <- a[non.zero]
-          b <- b[non.zero]
-        }
-
-        xs <- avg.log(a,b)[-1]
-        ya <- log(a/b,2)[-1]
-        yb <- log(b/a,2)[-1]
-        # why are these saw shaped?
-        
-        ssa <- smooth.spline(xs,ya, nknots=4) # hack fix? 
-        ssb <- smooth.spline(xs,yb, nknots=4) # hack fix? 
-        lines(ssa, col=sig.cols[i], lwd=sig.lwds[i], lty=sig.ltys[i])
-        lines(ssb, col=sig.cols[i], lwd=sig.lwds[i], lty=sig.ltys[i])
-      }
-      legend(max(xl)-1.5, min(yl)+1.5, legend=paste(100*(1-sigs),"% CI",sep=''), lty=sig.ltys, lwd=sig.lwds, col=sig.cols)
-    }
-
-    if(exists('subgroup.list')){
-      
-      ## add PIE CHART points
-      
-      ## figure out colors
-      who.color.names <- unique(unlist(subgroup.list))
-      who.colors <- rainbow(length(who.color.names))
-      names(who.colors) <- who.color.names
-      
-      ## and sizes
-      sig.sizes <- abs(.5 - pbinom(q=count.df$max, size=count.df$n, prob=prob))
-      par(new=TRUE)
-      pies(x=lapply(subgroup.list, table), x0=count.df$average, y0=count.df$ratio, radii=sig.sizes/10,
-           xlim=xl ,ylim=yl,  color.table=who.colors)
-      legend(max(xl)-1.5, max(yl), pch=16,col=who.colors,legend=names(who.colors))
-    }
-  }
-}
-
-
-
-
-
 ### a better pie function with origin positions ###
 pies <- function(x, show.labels = FALSE, show.slice.labels = FALSE, color.table = NULL, 
-		radii = 0.2, x0=NULL, y0=NULL, xlim=c(-1,1), ylim=c(-1,1),
+		radii = 1, x0=NULL, y0=NULL, xlim=c(-1,1), ylim=c(-1,1),
 		edges = 200,  clockwise = FALSE, 
                 init.angle = if (clockwise) 90 else 0, density = NULL, angle = 45, 
                 border = NULL, lty = NULL, main = NULL) 
@@ -270,6 +47,7 @@ pies <- function(x, show.labels = FALSE, show.slice.labels = FALSE, color.table 
   
   if(length(radii) < length(x))
     radii <- rep(radii, length.out=length(x))
+  radii <- radii/16 # rescale to pch=1 cex=1 
   pie.labels <- names(x)
 
   if (is.null(color.table)) {
@@ -282,7 +60,7 @@ pies <- function(x, show.labels = FALSE, show.slice.labels = FALSE, color.table 
   for(j in seq(along=x)){
     X <- x[[j]]
     data.labels <- names(X)
-    
+
     if(j != 1)
       par(new=TRUE)
     if (!is.numeric(X) || any(is.na(X) | X < 0)) 

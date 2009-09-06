@@ -16,9 +16,11 @@ cmdArgsToVariables <- function(){
 tab2df <- function(x){
   
   columns <- list()
+  rows <- row.names(x)
   for(colname in colnames(x))
     columns[[colname]] <- x[,colname]
-  
-  return(data.frame(columns))
+  df <- data.frame(columns)
+  row.names(df) <- rows
+  return(df)
   
 }

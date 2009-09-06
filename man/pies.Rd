@@ -6,7 +6,7 @@ Plot pie charts in an XY scatterplot. An overhaul of the original pie plot funct
 }
 \usage{
 pies(x, show.labels = FALSE, show.slice.labels = FALSE, color.table = NULL, 
-		radii = 0.2, x0=NULL, y0=NULL, xlim=c(-1,1), ylim=c(-1,1),
+		radii = 1, x0=NULL, y0=NULL, xlim=c(-1,1), ylim=c(-1,1),
 		edges = 200,  clockwise = FALSE, 
                 init.angle = if (clockwise) 90 else 0, density = NULL, angle = 45, 
                 border = NULL, lty = NULL, main = NULL) 
