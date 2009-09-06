@@ -5,12 +5,12 @@
 Truncate by shortening the file name of the path.
 }
 \usage{
-truncPath(path, limit=256, minlen=15)
+truncPath(path, limit=256, min.length=15)
 }
 \arguments{
 \item{path}{system path to be checked and potentially shortened.}
 \item{limit}{limit to the length of the path.}
-\item{minlen}{minimum length of path.}
+\item{min.length}{minimum length of path.}
 }
 \seealso{
 }

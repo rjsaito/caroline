@@ -1,8 +1,8 @@
 \name{m}
 \alias{m}
-\title{Reload Saved Datasets}
+\title{Regexp Match Operator}
 \description{
-A grep / sub like function that actually returns the n back-referenced *matches* 
+A grep  sub like function that actually returns the n back-referenced *matches* 
 (as columns in a datframe of the same length as the input vector). This function
 is more geared towards *extracting* than cleaning ... 
 even though it uses sub (a cleaning function) to do so.
@@ -17,7 +17,7 @@ m(pattern, vect, names="V", types="character")
 \item{types}{The vector of types of the new variables to be created out of vect. Must be the same lenght as vect.}
 }
 \seealso{
-\code{\link{gsub}}.
+\code{\link{gsub},\link{regexpr}, \link{grep}, \link{gregexpr}}.
 }
 \examples{
 }

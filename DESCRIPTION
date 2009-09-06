@@ -1,5 +1,5 @@
 Package: caroline
-Version: 0.1-1
+Version: 0.1-3
 Date: 2009-09-06
 Title: Generic Functions for R
 Author: David M. Schruth <dschruth@u.washington.edu>
@@ -9,7 +9,7 @@ Suggests:
 Description: The caroline package is a collection of functions useful
         for various general situations.
 License: GPL (>= 2)
-URL: http://www.r-project.org, http://www.another.url
-Packaged: Sun Sep 6 15:37:36 2009; dave
+URL: http://www.schruth.org
+Packaged: 2009-10-28 03:12:18 UTC; dschruth
 Repository: CRAN
-Date/Publication: 2009-09-07 09:37:39
+Date/Publication: 2009-10-28 07:55:58
