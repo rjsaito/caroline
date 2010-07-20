@@ -1,1 +1,1 @@
-export(cmdArgsToVariables, tab2df, pad, m, pies, makeElipseCoords, plotClock, violins)
+export(cmdArgsToVariables, tab2df, pad, m, pies, makeElipseCoords, plotClock, violins, write.delim)
