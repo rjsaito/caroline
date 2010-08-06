@@ -22,6 +22,9 @@ cat.to.list <- function (x, a)
 ## David M. Schruth <dschruth at u.washington.edu>  2/12/10
 ## who migrated the function out of the vioplot library
 
+# future plans: 
+# skew, kurtosis and a Shapiro test statistic to quantify some aspects of the shape of each violin
+
 violins <- function (x, by, range = 1.5, h = NULL, ylim = NULL, names = NULL, 
     horizontal = FALSE, col = "transparent", border = "black", lty = 1, 
     lwd = 1, rectCol = "grey50", colMed = "grey80", pchMed = 19, 
