@@ -4,7 +4,7 @@
 \description{
 Used to group a dataframe of numbers by a factor that need not be the same length.}
 \usage{
-regroupDF(df, old, new, cols, funcs=rep('sum',length(cols)))
+regroupDF(df, old, new, cols, funcs=rep('sum',length(cols)), combine=TRUE)
 }
 \arguments{
 \item{df}{a dataframe.}
@@ -12,6 +12,7 @@ regroupDF(df, old, new, cols, funcs=rep('sum',length(cols)))
 \item{new}{the new ids (must be a vector of the same length as 'old'.}
 \item{cols}{the colums to include in the output.}
 \item{funcs}{the functions to perform on the output (default is to sum) .}
+\item{combine}{Determines wether to combine with existing groupings or to start fresh.}
 }
 \seealso{
 }

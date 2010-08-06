@@ -27,6 +27,21 @@ plotClock <- function(hour, minute, title, x0 = 0, y0 = 0, r = 1){  #ampm = "not
 
 }
 
+## function to grab par's usr param for use in subsequence plots
+usr2lims <- function(adj=.04){
+  
+  par.usr <- par('usr')
+  xlims <- par.usr[c(1,2)]
+  ylims <- par.usr[c(3,4)]
+
+  adj <- adj - adj^2 *2 # this simplifies the math below
+  
+  xlims <- xlims + c(adj,-adj) *  diff(xlims)
+  ylims <- ylims + c(adj,-adj) *  diff(ylims)
+
+  return(list(x=xlims, y=ylims))
+}
+
 
 ### a better pie function with origin positions ###
 pies <- function(x, show.labels = FALSE, show.slice.labels = FALSE, color.table = NULL, 
