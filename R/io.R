@@ -1,8 +1,8 @@
 
 ## FILE I/O
 
-write.delim <- function(df, file){
-	write.table(df, file,  quote=FALSE, row.names=FALSE, sep='\t')
+write.delim <- function(df, file, quote=FALSE, row.names=FALSE, sep='\t', ...){
+	write.table(df, file,  quote=quote, row.names=row.names, sep=sep, ...)
 }
 
 
@@ -17,10 +17,10 @@ write.delim <- function(df, file){
 .countLocks <- function(filepath)
   length(.findLocks(.nameLock(filepath)))
 
-rmFileLock <- function(filepath, id)
+.rmFileLock <- function(filepath, id)
   file.remove(.nameLock(filepath, id))  
 
-getFileLock <- function(filepath, wait.time=.01, id){
+.getFileLock <- function(filepath, wait.time=.01, id){
   
   if(!file.exists(filepath))
     warning(paste('specified file', filepath,"doesn't exist yet"))
@@ -37,7 +37,7 @@ getFileLock <- function(filepath, wait.time=.01, id){
     Sys.sleep(runif(1, wait.time/2, wait.time))
     lock.ct <- .countLocks(filepath) 
     if(lock.ct > 1)
-      rmFileLock(filepath, id)
+      .rmFileLock(filepath, id)
     if(lock.ct == 1)
       break()
   }    
@@ -47,10 +47,10 @@ getFileLock <- function(filepath, wait.time=.01, id){
 .write <- function(x, file = "data", ncolumns = if (is.character(x)) 1 else 5, append = FALSE, sep = " ", lock=FALSE){
   rand.suffix <- round(runif(1,1,1500000000))
   if(lock)
-    getFileLock(file, id = rand.suffix)
+    .getFileLock(file, id = rand.suffix)
   cat(x, file = file, sep = c(rep.int(sep, ncolumns - 1), "\n"), append = append)
   if(lock)
-    rmFileLock(file, id = rand.suffix)
+    .rmFileLock(file, id = rand.suffix)
 }
 
 

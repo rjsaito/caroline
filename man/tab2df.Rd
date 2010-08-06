@@ -5,10 +5,11 @@
 Convert a table to a dataframe while perserving the same number of columns and rows and names of each.
 }
 \usage{
-tab2df(x)
+tab2df(x, ...)
 }
 \arguments{
 \item{x}{a table class object (output from the table command).}
+\item{...}{other arguments passed to data.frame(...).}
 }
 \seealso{
 table

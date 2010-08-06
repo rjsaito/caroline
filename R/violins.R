@@ -1,6 +1,6 @@
 ## cat.to.list stolen verbatim from the 'fields' package from University Center for Atmospheric Research,
 ## required in the new violins function
-cat.to.list <- function (x, a) 
+.cat.to.list <- function (x, a) 
 {
     a <- as.character(a)
     label <- unique(a)
@@ -35,8 +35,8 @@ violins <- function (x, by, range = 1.5, h = NULL, ylim = NULL, names = NULL,
    require(sm)										  ## call required library if not already loaded
    if(is.data.frame(x)) x<-as.list.data.frame(x)  ## convert dataframe to list if needed
     if (!missing(by)) {                           ## handle 'by' variable
-    if(is.numeric(by)) x<-cat.to.list(x[order(by)],sort(by))  ## 'by' is numeric so sort it
-    if(!is.numeric(by)) x <- cat.to.list(x, by)               ## 'by' is categorical
+    if(is.numeric(by)) x<-.cat.to.list(x[order(by)],sort(by))  ## 'by' is numeric so sort it
+    if(!is.numeric(by)) x <- .cat.to.list(x, by)               ## 'by' is categorical
                       }                           ## 'by' presumes univariate x input
     if(is.list(x)){                #dschruth added
     	datas <- x                 #dschruth added

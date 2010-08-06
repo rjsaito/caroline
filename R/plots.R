@@ -43,6 +43,8 @@ usr2lims <- function(adj=.04){
 }
 
 
+
+
 ### a better pie function with origin positions ###
 pies <- function(x, show.labels = FALSE, show.slice.labels = FALSE, color.table = NULL, 
 		radii = 1, x0=NULL, y0=NULL, xlim=c(-1,1), ylim=c(-1,1),
@@ -84,60 +86,89 @@ pies <- function(x, show.labels = FALSE, show.slice.labels = FALSE, color.table 
     if(j != 1)
       par(new=TRUE)
     if (!is.numeric(X) || any(is.na(X) | X < 0)) 
-        stop("'x' values must be positive.")
+        stop("'x' values must be non-missing positive.")
 
-    ## generate a slice fraction vector
-    X <- c(0, cumsum(X)/sum(X))
-    names(X) <- data.labels  #re-label it
+
+    if(length(X) == 0){
+      warning(paste(names(x)[[j]], 'has zero length vector'))
+
+    }else{
+
     
-    dx <- diff(X)
-    nx <- length(dx)
-    plot.new()
-    pin <- par("pin")
-    if(all(xlim == c(-1, 1)) && all(ylim == c(-1,1))){
-     if (pin[1] > pin[2]) 
-         xlim <- (pin[1]/pin[2]) * xlim
-     else ylim <- (pin[2]/pin[1]) * ylim
-    }
+      ## generate a slice fraction vector
+      X <- c(0, cumsum(X)/sum(X))
+      names(X) <- data.labels  #re-label it
+      
+      dx <- diff(X)
+      nx <- length(dx)
+      plot.new()
+      pin <- par("pin")
+      if(all(xlim == c(-1, 1)) && all(ylim == c(-1,1))){
+        if (pin[1] > pin[2]) 
+          xlim <- (pin[1]/pin[2]) * xlim
+        else ylim <- (pin[2]/pin[1]) * ylim
+      }
+      
+      plot.window(xlim, ylim, "") #, asp = 1)
+      col <- color.table[names(X)]
 
-    plot.window(xlim, ylim, "") #, asp = 1)
-    col <- color.table[names(X)]
-
-    border <- rep(border, length.out = nx)
-    lty <- rep(lty, length.out = nx)
-    angle <- rep(angle, length.out = nx)
-    density <- rep(density, length.out = nx)
-    twopi <- if (clockwise) 
-      -2 * pi
-    else 2 * pi
-    ## function to turn theta into xy coordinates
-    t2xy <- function(t) {
+      if(length(border)> 1){
+        if(length(border) != length(x))
+          stop('length of border doesnt equal length of x')
+        this.brdr <- border[j]
+      }else{
+        this.brdr <- border
+      }
+      
+      lty <- rep(lty, length.out = nx)
+      angle <- rep(angle, length.out = nx)
+      density <- rep(density, length.out = nx)
+      twopi <- if (clockwise) 
+        -2 * pi
+      else 2 * pi
+      ## function to turn theta into xy coordinates
+      t2xy <- function(t) {
         t2p <- twopi * t + init.angle * pi/180
         list(x = radii[j] *cx * cos(t2p), y =  radii[j] * cy * sin(t2p)) #y
-    }
-
-    ## loop through each slice of the pie
-    for (i in 1:nx) {
-      lab <- as.character(names(X)[i])
-      n <- max(2, floor(edges * dx[i]))
-      P <- t2xy(seq.int(X[i], X[i + 1], length.out = n))
-      polygon(c(x0[j]+ P$x, x0[j]), c(y0[j] +P$y, y0[j]), density = density[i], angle = angle[i], 
-              border = border[i], col = col[lab], lty = lty[i])
-      P <- t2xy(mean(X[i + 0:1]))
-
-      if (!is.na(lab) && nzchar(lab)) {
-        if(show.slice.labels){
-          lines(x0[j] +c(1, 1.05) * P$x, y0[j] +c(1, 1.05) * P$y)
-          text(x0[j] +1.1 * P$x, y0[j] + 1.1 * P$y, lab, xpd = TRUE, 
-               adj = ifelse(P$x < 0, 1, 0))
+      }
+      
+      ## loop through each slice of the pie
+      for (i in 1:nx) {
+        lab <- as.character(names(X)[i])
+        n <- max(2, floor(edges * dx[i]))
+        P <- t2xy(seq.int(X[i], X[i + 1], length.out = n))
+        polygon(c(x0[j]+ P$x, x0[j]), c(y0[j] +P$y, y0[j]), density = density[i], angle = angle[i], 
+                border = this.brdr, col = col[lab], lty = lty[i])
+        P <- t2xy(mean(X[i + 0:1]))
+        
+        if (!is.na(lab) && nzchar(lab)) {
+          if(show.slice.labels){
+            lines(x0[j] +c(1, 1.05) * P$x, y0[j] +c(1, 1.05) * P$y)
+            text(x0[j] +1.1 * P$x, y0[j] + 1.1 * P$y, lab, xpd = TRUE, 
+                 adj = ifelse(P$x < 0, 1, 0))
+          }
         }
       }
-    }
-    title(main = main)
-    if(show.labels)
-      text(x0[j],y0[j] + radii[j]+.2, pie.labels[j])
-    
-    invisible(NULL)
-    
+      title(main = main)
+      if(show.labels)
+        text(x0[j],y0[j] + radii[j]+.2, pie.labels[j])
+      
+      invisible(NULL)
+    }    
   }
+}
+
+if(F){
+  png('tmp.png')
+  plot(c(0,0), c(3,3))
+  pies(
+       list(
+            a=nv(c(1,2,3),c('one','two','thre')),
+            b=nv(c(2,2,3),c('one','two','thre')),
+            c=nv(c(1,2,3),c('one','two','thre'))
+            ),
+       x0=c(0,.5,1),
+       y0=c(0,.5,1), radii=6, border=c('gray', 'black', 'red')
+       )
+  dev.off()
 }

@@ -4,12 +4,12 @@
 \description{
 The R equvalent of a SQL 'group by' call .}
 \usage{
-groupBy(df, fact, cols, funcs=rep('sum',length(cols)))
+groupBy(df, fact, clmns = names(df), funcs=rep('sum',length(clmns)))
 }
 \arguments{
 \item{df}{a data frame.}
 \item{fact}{the factor used to determine the grouping.}
-	\item{cols}{the colums to include in the output.}
+\item{clmns}{the colums to include in the output.}
 \item{funcs}{the functions to perform on the output (default is to sum) .}
 }
 \seealso{

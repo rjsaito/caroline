@@ -5,11 +5,15 @@
 A simple wrapper for write.table with the same options as read.delim
 }
 \usage{
-write.delim(df, file)
+write.delim(df, file, quote = FALSE, row.names = FALSE, sep = "\t", ...)
 }
 \arguments{
 \item{df}{a dataframe.}
 \item{file}{outputfile path.}
+\item{quote}{should elements of the dataframe be quoted for output.}
+\item{row.names}{should the output include rownames.}
+\item{sep}{the delimiter between fields.}
+\item{...}{other parameters passed to write.table.}
 }
 \seealso{
 }
