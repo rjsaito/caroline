@@ -1,8 +1,8 @@
 \name{regroup}
 \alias{regroup}
-\title{Regroup a dataframe by a new trumping factor (NA's allowed).}
+\title{Regroup a dataframe.}
 \description{
-Used to group a dataframe of numbers by a factor that need not be the same length.}
+Used to group a dataframe of numbers by a factor that need not be the same length.  Find the a factor in the old df and use it to group by the new trumping factor (NA's allowed)}
 \usage{
 regroup(df, old, new, clmns, funcs=rep('sum',length(clmns)), combine=TRUE)
 }
@@ -16,7 +16,14 @@ regroup(df, old, new, clmns, funcs=rep('sum',length(clmns)), combine=TRUE)
 }
 \seealso{
 }
-\examples{
+\value{
+a dataframe with number of rows equal to the number of factor levels in 'new'
 }
-\keyword{}
+\examples{
+
+df <- data.frame(a=rnorm(20),b=rpois(20,1))
+
+mapping <- data.frame(old=rownames(df), new=rep(c('a','b'),10))
+regroup(df, old=mapping$old, new=mapping$new)
+}
 

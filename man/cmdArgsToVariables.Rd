@@ -8,11 +8,18 @@ Assign the values after '=' to these variables.
 \usage{
 cmdArgsToVariables()
 }
-\arguments{
-}
-\seealso{
+
+\value{
+variable(s) stored in memory
 }
 \examples{
+
+\dontrun{
+## R CMD BATCH --some.variable=testing
+cmdArgsToVariables() 
+print(some.variable)
+#> 'testing'
+}
 }
 \keyword{IO}
 

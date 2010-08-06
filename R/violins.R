@@ -1,6 +1,116 @@
+
+ .vio.stats <- function (x,by)       # see http://legacy.ncsu.edu/ST370/distance/rlab/
+{
+    if (!missing(by)) {
+        x <- .cat2list(c(x), by)
+    }
+    if (!is.list(x) & !is.matrix(x))
+        x <- matrix(x, ncol = 1)
+    if (is.list(x)) {
+        nc <- length(names(x))
+        out <- matrix(NA, ncol = nc, nrow = length(.distDescription()))
+        dimnames(out) <- list(.distDescription(), names(x))
+        for (j in (1:nc)) {
+          if (!is.factor(x[[j]])) {
+            if (is.numeric(x[[j]])) {
+                out[, j] <- .distDescription(x[[j]])  #list
+            }
+          }
+        }
+        return(noquote(out))
+    }
+    if (is.matrix(x)) {
+        nc <- ncol(x)
+        out <- matrix(NA, ncol = nc, nrow = length(.distDescription()))
+        dimnames(out) <- list(.distDescription(), dimnames(x)[[2]])
+        for (k in (1:nc)) {
+           if (!is.factor(x[[k]])) {
+            out[, k] <- .distDescription(x[, k])  #matrix
+           }
+        }
+        return(noquote(out))
+    }
+}
+
+.distDescription <-function (x)
+{
+  lab <- c("N", "mean", "SD", "robust min", "min", "Q1", "median",
+      "Q3", "max", "robust max",
+      "skew", "kurtosys","missing values","unique values","Shapiro p")
+  if (missing(x)) {
+      return(lab)
+  }
+  temp <- rep(0, length(lab))
+  xt <- x[!is.na(x)]
+  n <- length(xt)
+  if (!is.numeric(xt) || all(is.na(x))) {
+      return(c(n, NA, NA, rep(NA, 7), length(x) - length(xt),NA))
+  }
+  else {
+  if (n < 4) {
+      xt <- sort(xt)
+      if (n == 1) {
+	  return(sprintf("%10.4f",c(n, xt[1], NA, rep(c(NA,xt[1]), 3), rep(NA,3), length(x) -
+	      length(xt),length(unique(xt)),NA)))
+      }
+      if (n == 2) {
+	  return(sprintf("%10.4f",c(n, mean(xt), sqrt(var(xt)), .rrange(xt)[1], c(xt[1], xt[1],
+	      mean(xt), xt[2], xt[2]), .rrange(xt)[2], NA, NA, length(x) - length(xt),length(unique(xt)),NA)))
+      }
+      if (n == 3) {
+	  return(sprintf("%10.4f",c(n, mean(xt), sqrt(var(xt)), .rrange(xt)[1], c(xt[1], xt[1],
+	      xt[2], xt[3], xt[3]), .rrange(xt)[2], NA, NA, length(x) - length(xt),length(unique(xt)),NA)))
+      }
+  }
+  else {
+      if (length(unique(x[!is.na(x)]))>1) {
+	 if(length(x)<5001) {    shapp<-shapiro.test(x)  }}
+      else  { shapp<-NULL              #trap shapiro's with no variability
+	shapp$p<-NA
+	}
+      if(length(x)>5000) { shapp<-NULL
+	shapp$p<-NA    }
+
+  return(sprintf("%10.4f",c(length(xt), mean(xt), sqrt(var(xt)), .rrange(xt)[1], min(xt),
+	  quantile(xt, c(0.25, 0.5, 0.75)), max(xt), .rrange(xt)[2], .skewed(xt), .kurtosys(xt),
+	  length(x) - length(xt),length(unique(xt)),shapp$p)))     #
+  }
+ }
+}
+
+.skewed <-function (x)
+{
+  # from Tom Fletcher, University of Missouri - St. Louis  : http://www.umsl.edu/~fletchert/quant/DataScreen.txt
+  n <- length (x[!(is.na(x))])
+  sd <- sqrt(var(x,na.rm=T))
+  m <- mean(x,na.rm=T)
+  (n/((n-1)*(n-2)))*sum(((x-m)/sd)^3, na.rm=T)
+}
+
+.kurtosys <-function (x)
+{
+  # from Tom Fletcher
+  n <- length (x[!(is.na(x))])
+  sd <- sqrt(var(x,na.rm=T))
+  m <- mean(x,na.rm=T)
+  (((n*(n+1))/((n-1)*(n-2)*(n-3)))*(sum(((x-m)/sd)^4, na.rm=T)))-((3*(n-1)^2)/((n-2)*(n-3)))
+}
+
+.rrange <-function (x, range = 1, coef = 1.5, na.rm = TRUE)
+{                                    ### robust range from package sfsmisc Zurich
+  if (!missing(range)) {
+    if (!missing(coef))
+      stop("Must use either 'range' or 'coef'")
+    coef <- 1.5 * range
+  }
+  if (!na.rm && any(is.na(x)))
+  return(0 + c(NA, NA))
+  boxplot.stats(x, coef = coef, do.conf = FALSE, do.out = FALSE)$stats[c(1,5)]
+} 
+
 ## cat.to.list stolen verbatim from the 'fields' package from University Center for Atmospheric Research,
 ## required in the new violins function
-.cat.to.list <- function (x, a) 
+.cat2list <- function (x, a) 
 {
     a <- as.character(a)
     label <- unique(a)
@@ -22,21 +132,18 @@
 ## David M. Schruth <dschruth at u.washington.edu>  2/12/10
 ## who migrated the function out of the vioplot library
 
-# future plans: 
-# skew, kurtosis and a Shapiro test statistic to quantify some aspects of the shape of each violin
-
 violins <- function (x, by, range = 1.5, h = NULL, ylim = NULL, names = NULL, 
     horizontal = FALSE, col = "transparent", border = "black", lty = 1, 
     lwd = 1, rectCol = "grey50", colMed = "grey80", pchMed = 19, 
     at, add = FALSE, wex = 1, drawRect = TRUE, main = "", connect=TRUE,
-    xlab="",ylab="") 
+    xlab="",ylab="", stats=FALSE) 
 {
    #library(vioplot)
    require(sm)										  ## call required library if not already loaded
    if(is.data.frame(x)) x<-as.list.data.frame(x)  ## convert dataframe to list if needed
     if (!missing(by)) {                           ## handle 'by' variable
-    if(is.numeric(by)) x<-.cat.to.list(x[order(by)],sort(by))  ## 'by' is numeric so sort it
-    if(!is.numeric(by)) x <- .cat.to.list(x, by)               ## 'by' is categorical
+    if(is.numeric(by)) x<-.cat2list(x[order(by)],sort(by))  ## 'by' is numeric so sort it
+    if(!is.numeric(by)) x <- .cat2list(x, by)               ## 'by' is categorical
                       }                           ## 'by' presumes univariate x input
     if(is.list(x)){                #dschruth added
     	datas <- x                 #dschruth added
@@ -151,4 +258,5 @@ violins <- function (x, by, range = 1.5, h = NULL, ylim = NULL, names = NULL,
     }
     invisible(list(upper = upper, lower = lower, median = med, 
         q1 = q1, q3 = q3))
+    if (stats) .vio.stats(x,by) 
 }

@@ -18,5 +18,9 @@ new variables in the global environment
 assign
 }
 \examples{
+L <- list(a=c(12,123,1), b='alfalfa', c=c('a','b','c'))
+delist(L)
+print(a)
+print(b)
+print(c)
 }
-\keyword{}

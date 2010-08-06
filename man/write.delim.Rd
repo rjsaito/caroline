@@ -15,9 +15,14 @@ write.delim(df, file, quote = FALSE, row.names = FALSE, sep = "\t", ...)
 \item{sep}{the delimiter between fields.}
 \item{...}{other parameters passed to write.table.}
 }
-\seealso{
+\value{
+A tab delimited text file
 }
 \examples{
+## Not run: 
+x <- data.frame(a = I("a \" quote"), b = pi)
+write.delim(x, file = "foo.tab")
+## End(Not run)
 }
 \keyword{}
 

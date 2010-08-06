@@ -12,9 +12,14 @@ groupBy(df, fact, clmns = names(df), funcs=rep('sum',length(clmns)))
 \item{clmns}{the colums to include in the output.}
 \item{funcs}{the functions to perform on the output (default is to sum) .}
 }
-\seealso{
+\value{
+an summary/aggregate dataframe
 }
 \examples{
+ e <- data.frame(a=runif(12),b=runif(12), z=rep(letters[13:18],2),w=rep(letters[20:23],3))
+
+groupBy(df=e, fact=e$w, clmns=c('a','b'), funcs=c('sum','prod'))
+
 }
 \keyword{}
 

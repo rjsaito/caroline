@@ -7,7 +7,7 @@ makeElipseCoords <- function(x0 = 0, y0 = 0, b = 1, a = 1, alpha = 0, pct.range 
 }
 
 
-plotClock <- function(hour, minute, title, x0 = 0, y0 = 0, r = 1){  #ampm = "notUsed"
+plotClock <- function(hour, minute, x0 = 0, y0 = 0, r = 1){  
   
   circleXY <- makeElipseCoords(x0 = x0, y0 = y0, b = 1.1*r, a = 1.1*r, alpha = 0, pct.range = c(0,1), len = 50)
   quarHourTickMarksXY <- makeElipseCoords(x0 = x0, y0 = y0, b = 1.05*r, a = 1.05*r, alpha = (pi/2), pct.range = c((12*4-1)/(12*4),0), len = 12*4)
@@ -17,13 +17,15 @@ plotClock <- function(hour, minute, title, x0 = 0, y0 = 0, r = 1){  #ampm = "not
   text(hourLabelsXY[,1],hourLabelsXY[,2],seq(1,12), cex=.5)
   text(quarHourTickMarksXY[,1],quarHourTickMarksXY[,2],".")
 
-  minuteV <- minute/12
-  minuteVXY <- makeElipseCoords(x0 = x0, y0 = y0, b = r, a = r, alpha = 0, pct.range =  (.25 - c(minuteV,minuteV)), len = 1)
-  segments(x0,y0,minuteVXY[1],minuteVXY[2])
+  minuteV <- minute/60
+  minuteVXY <- makeElipseCoords(x0 = x0, y0 = y0, b = r, a = r, alpha = 0, 
+  				pct.range =  (.25 - minuteV), len = 1)
+  segments(x0,y0,minuteVXY$x[1],minuteVXY$y[1])
 
   hourV <- hour/12
-  hourVXY <- makeElipseCoords(x0 = x0, y0 = y0, b = .7*r, a =.7*r, alpha = 0, pct.range = (.25 - c(hourV,hourV)), len = 1)
-  segments(x0,y0,hourVXY[1],hourVXY[2])  
+  hourVXY <- makeElipseCoords(x0 = x0, y0 = y0, b = .7*r, a =.7*r, alpha = 0, 
+  				pct.range = (.25 - c(hourV,hourV)), len = 1)
+  segments(x0,y0,hourVXY$x,hourVXY$y)  
 
 }
 
@@ -47,7 +49,7 @@ usr2lims <- function(adj=.04){
 
 ### a better pie function with origin positions ###
 pies <- function(x, show.labels = FALSE, show.slice.labels = FALSE, color.table = NULL, 
-		radii = 1, x0=NULL, y0=NULL, xlim=c(-1,1), ylim=c(-1,1),
+		radii = rep(2,length(x)), x0=NULL, y0=NULL, xlim=c(-1,1), ylim=c(-1,1),
 		edges = 200,  clockwise = FALSE, 
                 init.angle = if (clockwise) 90 else 0, density = NULL, angle = 45, 
                 border = NULL, lty = NULL, main = NULL) 
@@ -156,19 +158,4 @@ pies <- function(x, show.labels = FALSE, show.slice.labels = FALSE, color.table 
       invisible(NULL)
     }    
   }
-}
-
-if(F){
-  png('tmp.png')
-  plot(c(0,0), c(3,3))
-  pies(
-       list(
-            a=nv(c(1,2,3),c('one','two','thre')),
-            b=nv(c(2,2,3),c('one','two','thre')),
-            c=nv(c(1,2,3),c('one','two','thre'))
-            ),
-       x0=c(0,.5,1),
-       y0=c(0,.5,1), radii=6, border=c('gray', 'black', 'red')
-       )
-  dev.off()
 }

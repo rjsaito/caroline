@@ -12,9 +12,19 @@ nv(x, name)
 \item{x}{The source dataframe, table, or vector}
 \item{name}{The column name you would like to pull out as a named vector. OR the names of the vector (if x is a vector)}
 }
-\seealso{
-\$
+\value{
+a named vector
 }
 \examples{
+
+## example 1: pulling a row.named vector out of a dataframe
+df <- data.frame(a=c(1,2,34,4,5,3,23), b=c('z','x','y','z','x','n','p'))
+rownames(df) <- letters[1:nrow(df)]
+nv(df,'a')
+nv(df,'b')
+
+## example 2: a naming vectors from scratch
+nv(c(1,2,3), c('a','b','c'))
+nv(df$a, df$b)
+
 }
-\keyword{}

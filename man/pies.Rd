@@ -6,7 +6,7 @@ Plot pie charts in an XY scatterplot. An overhaul of the original pie plot funct
 }
 \usage{
 pies(x, show.labels = FALSE, show.slice.labels = FALSE, color.table = NULL, 
-		radii = 1, x0=NULL, y0=NULL, xlim=c(-1,1), ylim=c(-1,1),
+		radii = rep(2,length(x)), x0=NULL, y0=NULL, xlim=c(-1,1), ylim=c(-1,1),
 		edges = 200,  clockwise = FALSE, 
                 init.angle = if (clockwise) 90 else 0, density = NULL, angle = 45, 
                 border = NULL, lty = NULL, main = NULL) 
@@ -31,7 +31,31 @@ pies(x, show.labels = FALSE, show.slice.labels = FALSE, color.table = NULL,
 \seealso{
 pie
 }
+\value{
+Pie charts as points on a plot
+}
 \examples{
+
+
+
+## example 1
+  plot(c(0,1), c(0,1))
+  par(new=TRUE)
+  pies(
+       list(
+            a=nv(c(1,2,3),c('one','two','thre')),
+            b=nv(c(2,2,3),c('one','two','thre')),
+            c=nv(c(1,2,3),c('one','two','thre'))
+            ),
+       x0=c(0,.5,1),
+       y0=c(0,.5,1), radii=6, border=c('gray', 'black', 'red'),
+       xlim=usr2lims()$x,
+       ylim=usr2lims()$y,
+       
+       )
+
+
+## example 2
 n <- 200
 n.groups <- 10
 n.subgroups <-  6
@@ -42,7 +66,8 @@ group.df <- cbind.data.frame(grps,subgrps)
 subgroup.list <- by(group.df, group.df$grps, function(x) x$subgrps)
 
 pie.list <- lapply(subgroup.list, table)
-pies(x=pie.list, x0=rnorm(n.groups), y0=rnorm(n.groups), show.labels=TRUE, show.slice.labels=TRUE)
+col.tab <- nv(rainbow(6), unique(subgrps))
+
+pies(x=pie.list, x0=rnorm(n.groups), y0=rnorm(n.groups), radii=10, show.labels=TRUE, show.slice.labels=TRUE, color.table=col.tab)
 }
-\keyword{}
 

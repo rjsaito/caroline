@@ -5,14 +5,14 @@
 	 Dave McArthur <dmca@ucla.edu>}
 \title{Plot a Series of Vioplot Violins}
 \description{
-This is an improvment on the original vioplot function (combination of a box plot and a kernel density plot).  You can now pass a list of violins and a list of colors.
+This is an improvment on the original vioplot function (combination of a box plot and a kernel density plot).  You can now pass a list of violins and a list of colors. Optionally it also returns statistics on the distributions as well.
 }
 \usage{
 violins(x, by, range = 1.5, h = NULL, ylim = NULL, names =
                  NULL, horizontal = FALSE, col = "transparent", border
                  = "black", lty = 1, lwd = 1, rectCol = "grey50",
                  colMed = "grey80", pchMed = 19, at, add = FALSE, wex =
-                 1, drawRect = TRUE, main = "", connect = TRUE, xlab='', ylab='')
+                 1, drawRect = TRUE, main = "", connect = TRUE, xlab='', ylab='', stats=FALSE)
 }
 \arguments{
 \item{x}{list of vectors or a dataframe}
@@ -32,10 +32,22 @@ violins(x, by, range = 1.5, h = NULL, ylim = NULL, names =
 \item{connect}{connects a violin plot series at the medians with line segments}
 \item{xlab}{x axis label}
 \item{ylab}{y axis label}
+\item{stats}{print out statistics}
 }
 \seealso{
 vioplot
 }
+\value{a series of violin plots}
 \examples{
+
+n <- rnorm(130, 10, 3)
+p <- rpois(110, 4)
+u <- runif(300, 0, 20)
+l <- rlnorm(130, log(2))
+g <- rgamma(140, 3)
+e <- rexp(160)
+
+violins(list(e=e, p=p,u=u,n=n,l=l,g=g), ylim=c(0,20),
+         col=c('purple','lightblue','lightgreen','red','orange','yellow'),
+         stats=TRUE)
 }
-\keyword{}

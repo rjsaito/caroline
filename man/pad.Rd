@@ -13,9 +13,11 @@ pad(vect,np)
 \item{vect}{a vector of strings representing numbers.}
 \item{np}{number of zeros to pad to the left of the string.}
 }
-\seealso{
+\value{
+a (vector of) string(s) with np number of zeros padded on as a prefix
 }
 \examples{
+pad(c(1,10,1000,10000), 4)
 }
 \keyword{manip}
 

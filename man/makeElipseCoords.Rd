@@ -17,9 +17,11 @@ makeElipseCoords(x0 = 0, y0 = 0, b = 1, a = 1, alpha = 0, pct.range = c(0,1), le
 \item{pct.range}{percentage of the way around the elipse.}
 \item{len}{number of points used to draw elipse.}
 }
-\seealso{
+\value{
+a 2 column (x and y) dataframe with coordinates for drawing an elipse
 }
 \examples{
+makeElipseCoords(x0 = 0, y0 = 0, b = 1, a = 2, alpha = 0)
 }
 \keyword{graphs}
 
