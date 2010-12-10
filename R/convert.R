@@ -61,3 +61,17 @@ nv <- function(x, name){
   }
   v
 }
+
+
+pct <- function(df, clmns){
+   for(clmn in clmns)
+    df[,paste(clmn,'pct',sep='.')] <- df[,clmn]/sum(df[,clmn])
+  return(df) 
+}
+
+rerowname <- function(df, old='NA', new ='unknown'){
+  tmp.rn <- rownames(df)
+  tmp.rn[tmp.rn==old] <- new
+  rownames(df) <- tmp.rn
+  df
+}

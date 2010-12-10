@@ -159,3 +159,40 @@ leghead <- function(x, n=7, tabulate=FALSE, colors=TRUE, na.col='gray', other.co
 
   x
 }
+
+
+
+
+.vle2df <- function(vl,i){
+  ## vector list element to dataframe (preserves list element names)
+  if(class(vl[[i]])=='data.frame'){
+    names(df) <- paste(names(df),'.',i,sep='')
+  }else{
+    df <- as.data.frame(vl[[i]])
+    names(df) <- names(vl)[i]
+  }
+  df
+}
+
+nerge <- function(l, ...){
+  ## named data.frame or vector merge
+
+  if(!all(sapply(l, function(k) class(k) == 'data.frame' | is.vector(k))))
+     stop('list elements must be either of class data.frame or of type vector')
+  if(length(l) < 2)
+    stop('list l must have at least 2 elements')
+  if(is.null(names(l)))
+    stop('list l elements must be named')
+
+  if(!all(sapply(l, function(j) !is.null(names(j)))))
+    stop('all list elements must have names')
+    
+  df <- .vle2df(l,1)
+  for(e in 2:length(l)){
+    df <- merge(df, .vle2df(l,e), by='row.names', all=T)#, ...)
+    row.names(df) <- df$Row.names
+    df$Row.names <- NULL
+  }
+  
+  df
+}

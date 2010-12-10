@@ -159,3 +159,30 @@ pies <- function(x, show.labels = FALSE, show.slice.labels = FALSE, color.table 
     }    
   }
 }
+
+
+
+#annulus()  #donut or ring plot
+
+
+vennMatrix <- function(l){
+  ## much of the code in this function was inspired by parts of Yongmin Sun's doVennDiagram function
+  if(is.null(names(l)))
+    stop("The list 'l' must have named elements")
+  l.all <- do.call(c,lapply(l, as.character)) 
+  l.mat <- matrix(0, nrow = length(l.all), ncol = length(l))
+  colnames(l.mat) <- names(l)
+  rownames(l.mat) <- l.all
+
+  for(i in 1:length(l.all)) 
+    for(nm in names(l))
+      l.mat[i,nm] <- l.all[i] %in% l[[nm]]
+  return(l.mat)
+}
+
+
+
+text.plot <- function(..., x=1, y=1){
+  plot(x, y, pch='', bty='n',xaxt='n',yaxt='n', xlab='', ylab='')
+  text(x, y, ...)
+}
