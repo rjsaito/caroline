@@ -9,7 +9,8 @@ pies(x, show.labels = FALSE, show.slice.labels = FALSE, color.table = NULL,
 		radii = rep(2,length(x)), x0=NULL, y0=NULL, xlim=c(-1,1), ylim=c(-1,1),
 		edges = 200,  clockwise = FALSE, 
                 init.angle = if (clockwise) 90 else 0, density = NULL, angle = 45, 
-                border = NULL, lty = NULL, main = NULL) 
+                border = NULL, lty = NULL, main = NULL, 
+                other.color='gray', na.color='white', ...)
 }
 \arguments{
 \item{x}{a list of named vectors.}
@@ -27,6 +28,9 @@ pies(x, show.labels = FALSE, show.slice.labels = FALSE, color.table = NULL,
 \item{border}{(possibly vectors) arguments passed to polygon which draws each slice.}
 \item{lty}{(possibly vectors) arguments passed to polygon which draws each slice.}
 \item{main}{an overall title for the plot.}
+\item{other.color}{color used for x vector elements for names without corresponding names in the color table}
+\item{na.color}{color used for x vector elements with missing names}
+\item{...}{other arguments passed to polygon}
 }
 \seealso{
 pie

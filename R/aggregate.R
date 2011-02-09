@@ -111,7 +111,7 @@ sstable <- function(x, idx.clmns, ct.clmns=NULL, na.label='NA'){#,exclude=exclud
 }
 
 
-leghead <- function(x, n=7, tabulate=FALSE, colors=TRUE, na.col='gray', other.col='white'){
+leghead <- function(x, n=7, tabulate=FALSE, colors=TRUE, na.name='NA',na.col='white', other.col='gray'){
 
   if(as.logical(tabulate))
     x <- sstable(x, tabulate)
@@ -121,7 +121,7 @@ leghead <- function(x, n=7, tabulate=FALSE, colors=TRUE, na.col='gray', other.co
     o.rn <- rownames(x)    
     is.n <- sapply(x, is.numeric)
     n <- n + sum(!is.n)  # so that we can utilize (an) extra color(s)
-    others.summed <- apply(x[n:nrow(x), is.n],2,sum)    
+    others.summed <- apply(x[(n+1):nrow(x), is.n],2,sum)    
     x <- rbind(head(x,n), c(others.summed, 'NA'[!is.n]))
     rownames(x) <- c(o.rn[1:n],'other')
     
@@ -129,7 +129,7 @@ leghead <- function(x, n=7, tabulate=FALSE, colors=TRUE, na.col='gray', other.co
 
   if('color' %in% colnames(x)){
     warn.col.clmn <- 'dataframe already has a color column:'
-    isna <- rownames(x)=='NA'
+    isna <- rownames(x)== 'NA'
     if(sum(isna) > 0){
       warn.col.clmn <- paste(warn.col.clmn , 'changing NA levels to', na.col, '.')
       x$color[isna] <- na.col
@@ -141,21 +141,25 @@ leghead <- function(x, n=7, tabulate=FALSE, colors=TRUE, na.col='gray', other.co
   }
   
   if(all(colors != FALSE)){
-
+    
     if(length(colors)>1){
 
       matches <- match(names(colors),rownames(x))
       if(all(is.na(matches)))
         stop('color vector names do not match the top n table row names')
-      x$colors <- colors[matches]
+      x$color <- colors[matches]
       
-      }else{
-        isna <- rownames(x)=='NA'
-        x$color[!isna] <- rainbow(nrow(x) - sum(isna))
-        x$color[ isna] <- na.col
-      }
-      x$color[rownames(x)=='other'] <- other.col
+    }else{
+      isna <- rownames(x)=='NA'
+      x$color[!isna] <- rainbow(nrow(x) - sum(isna))
+      x$color[ isna] <- na.col
+    }
   }
+  if('color' %in% colnames(x))
+    x$color[rownames(x)=='other'] <- other.col  
+
+  if(na.name != 'NA')
+    rownames(x)[match('NA', rownames(x))] <- na.name
 
   x
 }
@@ -165,14 +169,19 @@ leghead <- function(x, n=7, tabulate=FALSE, colors=TRUE, na.col='gray', other.co
 
 .vle2df <- function(vl,i){
   ## vector list element to dataframe (preserves list element names)
+
   if(class(vl[[i]])=='data.frame'){
-    names(df) <- paste(names(df),'.',i,sep='')
+    df <- vl[[i]]
+    names(df) <- paste(names(df),'.',i,sep='')    
   }else{
     df <- as.data.frame(vl[[i]])
-    names(df) <- names(vl)[i]
+    #names(df) <- i
+    colnames(df) <- i
   }
+  df$rownames <- rownames(df)  #necessary because the built in b='row.names' merge is really slow (if not completely broken)
   df
 }
+
 
 nerge <- function(l, ...){
   ## named data.frame or vector merge
@@ -183,16 +192,16 @@ nerge <- function(l, ...){
     stop('list l must have at least 2 elements')
   if(is.null(names(l)))
     stop('list l elements must be named')
-
-  if(!all(sapply(l, function(j) !is.null(names(j)))))
+  if(!all(sapply(l, function(j) !is.null(rownames(j)) | !is.null(names(j)))))
     stop('all list elements must have names')
     
-  df <- .vle2df(l,1)
+  df <- .vle2df(l,names(l)[1])
   for(e in 2:length(l)){
-    df <- merge(df, .vle2df(l,e), by='row.names', all=T)#, ...)
-    row.names(df) <- df$Row.names
-    df$Row.names <- NULL
+    df <- merge(df, .vle2df(l, names(l)[e]), by='rownames', all=T)
+    rownames(df) <- df$rownames
   }
-  
+  df$rownames <- NULL
   df
 }
+
+

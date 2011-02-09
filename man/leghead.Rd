@@ -8,13 +8,14 @@ An ideal place to use it is in a legend for ~lognormally distributed data.
 Additionally, an optional row-wise color coding column is added (the color 'gray' is used for missing row names).
 }
 \usage{
-leghead(x, n=7, tabulate=FALSE, colors=TRUE, na.col = "gray", other.col = "white")
+leghead(x, n=7, tabulate=FALSE, colors=TRUE, na.name='NA', na.col = "white", other.col = "gray")
 }
 \arguments{
 \item{x}{dataframe or table you wish to summarize}
-\item{n}{The number of rows you wish to display as is.}
+\item{n}{the number of rows you wish to display as is}
 \item{colors}{list of vectors or a dataframe}
 \item{tabulate}{the column name to tabulate on if x is an untabulated dataframe and FALSE otherwise}
+\item{na.name}{the new rowname for a row with a missing name}
 \item{na.col}{color for rows labeled as 'NA'}
 \item{other.col}{color for the rows labeled as 'unknown'}
 }

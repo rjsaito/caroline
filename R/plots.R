@@ -52,7 +52,8 @@ pies <- function(x, show.labels = FALSE, show.slice.labels = FALSE, color.table 
 		radii = rep(2,length(x)), x0=NULL, y0=NULL, xlim=c(-1,1), ylim=c(-1,1),
 		edges = 200,  clockwise = FALSE, 
                 init.angle = if (clockwise) 90 else 0, density = NULL, angle = 45, 
-                border = NULL, lty = NULL, main = NULL) 
+                border = NULL, lty = NULL, main = NULL, 
+                other.color='gray', na.color='white', ...) 
 {
   
   if(class(x)!='list')
@@ -95,8 +96,7 @@ pies <- function(x, show.labels = FALSE, show.slice.labels = FALSE, color.table 
       warning(paste(names(x)[[j]], 'has zero length vector'))
 
     }else{
-
-    
+      
       ## generate a slice fraction vector
       X <- c(0, cumsum(X)/sum(X))
       names(X) <- data.labels  #re-label it
@@ -112,7 +112,12 @@ pies <- function(x, show.labels = FALSE, show.slice.labels = FALSE, color.table 
       }
       
       plot.window(xlim, ylim, "") #, asp = 1)
+
+      ## change to gray all of the X names without colors in the color table
+      nolgnd <- names(X)[!names(X) %in% names(color.table) ]
+      color.table <- c(color.table, nv(rep(other.color,length(nolgnd)),nolgnd))
       col <- color.table[names(X)]
+      col[names(col)=='NA'] <- na.color 
 
       if(length(border)> 1){
         if(length(border) != length(x))
@@ -137,10 +142,11 @@ pies <- function(x, show.labels = FALSE, show.slice.labels = FALSE, color.table 
       ## loop through each slice of the pie
       for (i in 1:nx) {
         lab <- as.character(names(X)[i])
+        nx <- as.character(names(X)[i])
         n <- max(2, floor(edges * dx[i]))
         P <- t2xy(seq.int(X[i], X[i + 1], length.out = n))
         polygon(c(x0[j]+ P$x, x0[j]), c(y0[j] +P$y, y0[j]), density = density[i], angle = angle[i], 
-                border = this.brdr, col = col[lab], lty = lty[i])
+                border = this.brdr, col = col[lab], lty = lty[i], ...)
         P <- t2xy(mean(X[i + 0:1]))
         
         if (!is.na(lab) && nzchar(lab)) {
@@ -169,7 +175,7 @@ vennMatrix <- function(l){
   ## much of the code in this function was inspired by parts of Yongmin Sun's doVennDiagram function
   if(is.null(names(l)))
     stop("The list 'l' must have named elements")
-  l.all <- do.call(c,lapply(l, as.character)) 
+  l.all <- unique(do.call(c,lapply(l, as.character)))
   l.mat <- matrix(0, nrow = length(l.all), ncol = length(l))
   colnames(l.mat) <- names(l)
   rownames(l.mat) <- l.all

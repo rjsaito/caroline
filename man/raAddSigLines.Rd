@@ -17,6 +17,7 @@ raAddSigLines(n, end=20, alpha=1e-3, mm=0, A.shift=0, plot=FALSE, ...)
 \item{...}{other parameters passed to lines.}
 }
 \seealso{
+\code{\link{raPlot}}
 }
 \examples{
 }

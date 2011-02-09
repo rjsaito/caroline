@@ -19,7 +19,7 @@ venCounts
 }
 \examples{
 
-l <- list(a=factor('x','y','z'), b=factor('w','x','v'))
+l <- list(a=factor(c('x','y','z')), b=factor(c('w','x','v')))
 
 vennMatrix(l)
 

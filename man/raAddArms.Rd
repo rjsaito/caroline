@@ -16,6 +16,7 @@ raAddArms(epsilon=.55, start=1, end=6, A.shift=0, R.shift=0, ...)
 \item{...}{other parameters passed to lines.}
 }
 \seealso{
+\code{\link{raPlot}}
 }
 \examples{
 }

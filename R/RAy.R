@@ -130,7 +130,7 @@ raAddSigLines <- function(n, end=20, alpha=1e-3, mm=0, A.shift=0, plot=FALSE, ..
 }
 
 
-raAddAxlabs <- function(conditions=nv(c('a','b'),c('ref','obs')), normalize=T, add=TRUE, line=2){
+raAddAxLabs <- function(conditions=nv(c('a','b'),c('ref','obs')), normalize=T, add=TRUE, line=2){
 
   n <- as.numeric(normalize) + 1
   l.p <- c('','(')[n]
@@ -150,6 +150,9 @@ raAddAxlabs <- function(conditions=nv(c('a','b'),c('ref','obs')), normalize=T, a
 
   invisible(list(r=r,a=a))
 }
+
+#expression(paste(log[2], might want to add to above
+
 
 
 wjitter <- function(x, w, amount=.43){

@@ -1,11 +1,11 @@
-\name{raAddAxlabs}
-\alias{raAddAxlabs}
+\name{raAddAxLabs}
+\alias{raAddAxLabs}
 \title{Add axis labels to an RA plot.}
 \description{
 .
 }
 \usage{
-raAddAxlabs(conditions=nv(c('a','b'),c('ref','obs')), normalize=T, add=TRUE, line=2)
+raAddAxLabs(conditions=nv(c('a','b'),c('ref','obs')), normalize=T, add=TRUE, line=2)
 }
 \arguments{
 \item{conditions}{.}
@@ -14,6 +14,7 @@ raAddAxlabs(conditions=nv(c('a','b'),c('ref','obs')), normalize=T, add=TRUE, lin
 \item{line}{.}
 }
 \seealso{
+\code{\link{raPlot}}
 }
 \examples{
 }
