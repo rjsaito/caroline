@@ -4,7 +4,7 @@
 
 
 raPlot <- function(a, b, uniques=5, normalize=FALSE,  
-                   mm=0, alpha = 0.01, jitter=FALSE, jit.wgts=NULL,
+                   nr=0, alpha = 0.01, jitter=FALSE, jit.wgts=NULL,
                    rex=1, flat=TRUE, tail=.5, arms=.5, spine=1, border=NULL, ...){
   
   ## find the library-unique genes
@@ -50,10 +50,13 @@ raPlot <- function(a, b, uniques=5, normalize=FALSE,
   R <- log(a/b,2)
   A <- .avgLog(a,b)
 
+  scale.sizes <- function(A,R,nr) (A + 1) * abs(R-nr)/2 + 20*(A/max(A))  # +1 is for the uniques
+    
+  
   ## handle the case where things are normalized
   if(normalize){
     ## point cex sizes 
-    sizes <- (A + 1) * abs(R) # +1 is for the uniques
+    sizes <- scale.sizes(A,R,nr)
 
     ## normalization shift factor
     A.shift <- A.norm[1] - A[1]
@@ -62,12 +65,12 @@ raPlot <- function(a, b, uniques=5, normalize=FALSE,
     R <- R.norm
     A <- A.norm
     
-  }else{      0
-    sizes <- (A + 1) * abs(R.norm)  # +1 is for the uniques
+  }else{      
+    sizes <- scale.sizes(A,R,nr)
     A.shift <- R.shift <- 0  
   }
   
-  sizes <- sizes/max(sizes) * 3 + .3
+  sizes <- sizes/max(sizes) * 2 + .4
   if(flat)
     sizes <- 1  
 
@@ -83,10 +86,10 @@ raPlot <- function(a, b, uniques=5, normalize=FALSE,
     raAddArms(lwd=arms, lty=2, col='gray', A.shift=A.shift, R.shift=R.shift)  
   
   if(as.logical(tail) & !is.null(alpha))
-    raAddSigLines(n=length(a), mm=mm, lwd=tail, A.shift=A.shift, col='gray')
+    raAddSigLines(n=length(a), nr=nr, lwd=tail, A.shift=A.shift, col='gray')
   
   if(as.logical(spine))
-    segments(min(A)+2, mm, max(A), lwd=spine, col='gray')
+    segments(min(A)+2, nr, max(A), lwd=spine, col='gray')
 
   invisible(list(R=R,A=A, sizes=sizes))
 }
@@ -105,7 +108,7 @@ raAddArms <- function(epsilon=.55, start=1, end=6, A.shift=0, R.shift=0, ...){
 
 
 
-raAddSigLines <- function(n, end=20, alpha=1e-3, mm=0, A.shift=0, plot=FALSE, ...){
+raAddSigLines <- function(n, end=20, alpha=1e-3, nr=0, A.shift=0, plot=FALSE, ...){
 
   alpha.crctd <- alpha/(n/2) # simple bonferroni multiple testing correction
 
@@ -121,7 +124,7 @@ raAddSigLines <- function(n, end=20, alpha=1e-3, mm=0, A.shift=0, plot=FALSE, ..
     b <- b[non.zero]
     
     x <- .avgLog(a, b) + A.shift
-    y <- log(a/b, 2) + mm
+    y <- log(a/b, 2) + nr
 
     if(plot)
       lines(x, y, ...)

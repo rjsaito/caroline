@@ -11,7 +11,7 @@ The plot contains it's own built in significant lines (drawn using the binomial 
 }
 \usage{
 raPlot(a, b, uniques=5, normalize=FALSE,  
-                   mm=0, alpha = 0.01, jitter=FALSE, jit.wgts=NULL,
+                   nr=0, alpha = 0.01, jitter=FALSE, jit.wgts=NULL,
                    rex=1, flat=TRUE, tail=.5, arms=.5, spine=1, border=NULL, ...)
 }
 \arguments{
@@ -19,7 +19,7 @@ raPlot(a, b, uniques=5, normalize=FALSE,
 \item{b}{a vector of counts for b.}
 \item{uniques}{a boolean specifying whether or not to plot the library-unique genes (those with zero counts in one or the other library).}
 \item{normalize}{A boolean specifying whether or not to normalize the counts into proportions.}
-\item{mm}{a numeric value indicating the mean of M's normalization line.}
+\item{nr}{a numeric value indicating the asymptotic normalization ratio line.}
 \item{alpha}{a statisical significance value.}
 \item{jitter}{whether or not or how much to jitter the a and b counts into surrounding, non-overlapping space.}
 \item{jit.wgts}{a weight vector used to spread the counts of a and b into surrounding, non-overlapping space.}

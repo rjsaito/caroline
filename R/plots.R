@@ -192,3 +192,46 @@ text.plot <- function(..., x=1, y=1){
   plot(x, y, pch='', bty='n',xaxt='n',yaxt='n', xlab='', ylab='')
   text(x, y, ...)
 }
+
+
+
+
+mvlabs <- function(df, n=nrow(df), x='x', y='y', l='lab', cols=colors()[grep("dark",colors())], ...){
+
+  for(i in (1:n)+1){
+
+    ## identify point to move
+    idx <- identify(x=df[,x], y=df[,y], labels=df[,l],n=1)
+    print(df[idx,])
+    ## locate new location to move to
+    locs <- locator(n=1)
+
+    ## move the point  (refresh the plot?)
+    df[idx, x] <- locs$x[1]
+    df[idx, y] <- locs$y[1]
+    #points(x=df[idx, x], y=df[idx, y], col=colors()[i])
+    text(x=df[idx, x], y=df[idx, y], labels=as.character(df[idx,l]), col=cols[i], ...)
+
+  }
+  return(df)
+}
+
+
+
+labsegs <- function(x0, y0, x1, y1, buf=.3, ...){
+
+  a <- x1 - x0
+  b <- y1 - y0
+  c0 <- sqrt(a^2 + b^2)
+  theta <- atan(b/a)
+  theta[a<0] <- theta[a<0] + pi
+  c1 <- c0 - buf
+  
+  a1 <- c1*cos(theta)
+  b1 <- c1*sin(theta)
+
+  x1 <- x0 + a1
+  y1 <- y0 + b1
+
+  segments(x0,y0,x1,y1,...)
+}

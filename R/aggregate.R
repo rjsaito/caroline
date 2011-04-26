@@ -111,7 +111,7 @@ sstable <- function(x, idx.clmns, ct.clmns=NULL, na.label='NA'){#,exclude=exclud
 }
 
 
-leghead <- function(x, n=7, tabulate=FALSE, colors=TRUE, na.name='NA',na.col='white', other.col='gray'){
+leghead <- function(x, n=7, tabulate=FALSE, colors=TRUE, na.name='NA',na.col='white', other.col='gray', na.last=TRUE){
 
   if(as.logical(tabulate))
     x <- sstable(x, tabulate)
@@ -160,7 +160,12 @@ leghead <- function(x, n=7, tabulate=FALSE, colors=TRUE, na.name='NA',na.col='wh
 
   if(na.name != 'NA')
     rownames(x)[match('NA', rownames(x))] <- na.name
-
+    
+  if(na.last){
+    isna <- rownames(x)==na.name
+    if(sum(isna) > 0)
+      x <- x[c(rownames(x)[!isna], na.name),]
+  }
   x
 }
 
@@ -175,8 +180,8 @@ leghead <- function(x, n=7, tabulate=FALSE, colors=TRUE, na.name='NA',na.col='wh
     names(df) <- paste(names(df),'.',i,sep='')    
   }else{
     df <- as.data.frame(vl[[i]])
-    #names(df) <- i
     colnames(df) <- i
+    rownames(df) <- names(vl[[i]])
   }
   df$rownames <- rownames(df)  #necessary because the built in b='row.names' merge is really slow (if not completely broken)
   df

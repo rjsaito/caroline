@@ -1,6 +1,6 @@
 \name{volins}
 \alias{violins}
-\author{Daniel Adler <dadler at uni-goettingen.de>,
+\author{Daniel Adler <dadler@uni-goettingen.de>,
 	 David Schruth <dschruth@u.washington.edu>,
 	 Dave McArthur <dmca@ucla.edu>}
 \title{Plot a Series of Vioplot Violins}
@@ -12,7 +12,8 @@ violins(x, by, range = 1.5, h = NULL, ylim = NULL, names =
                  NULL, horizontal = FALSE, col = "transparent", border
                  = "black", lty = 1, lwd = 1, rectCol = "grey50",
                  colMed = "grey80", pchMed = 19, at, add = FALSE, wex =
-                 1, drawRect = TRUE, main = "", connect = TRUE, xlab='', ylab='', stats=FALSE)
+                 1, drawRect = TRUE, main = "", connect = TRUE, xlab='', ylab='', 
+                 stats=FALSE, ci.median_mu = TRUE)
 }
 \arguments{
 \item{x}{list of vectors or a dataframe}
@@ -33,6 +34,7 @@ violins(x, by, range = 1.5, h = NULL, ylim = NULL, names =
 \item{xlab}{x axis label}
 \item{ylab}{y axis label}
 \item{stats}{print out statistics}
+\item{ci.median_mu}{boolean for 95 pct ci.median and huber.mu M-estimator calculations}
 }
 \seealso{
 vioplot

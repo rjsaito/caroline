@@ -5,13 +5,13 @@
 .
 }
 \usage{
-raAddSigLines(n, end=20, alpha=1e-3, mm=0, A.shift=0, plot=FALSE, ...)
+raAddSigLines(n, end=20, alpha=1e-3, nr=0, A.shift=0, plot=FALSE, ...)
 }
 \arguments{
 \item{n}{.}
 \item{end}{.}
 \item{alpha}{.}
-\item{mm}{.}
+\item{nr}{a numeric value indicating the asymptotic normalization ratio line.}
 \item{A.shift}{.}
 \item{plot}{.}
 \item{...}{other parameters passed to lines.}
