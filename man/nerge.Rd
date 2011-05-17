@@ -24,7 +24,7 @@ nerge(l)
 
 
 l2 <- list(a=nv(c(1.23, 1.423, 2.343), c('z','y','x')),b=nv(c(6.34,7.34, 12.545),c('z','w','y')))
-nerge(l2, all=T)
+nerge(l2, all=TRUE)
 
 
 }

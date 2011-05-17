@@ -12,8 +12,9 @@ violins(x, by, range = 1.5, h = NULL, ylim = NULL, names =
                  NULL, horizontal = FALSE, col = "transparent", border
                  = "black", lty = 1, lwd = 1, rectCol = "grey50",
                  colMed = "grey80", pchMed = 19, at, add = FALSE, wex =
-                 1, drawRect = TRUE, main = "", connect = TRUE, xlab='', ylab='', 
-                 stats=FALSE, ci.median_mu = TRUE)
+                 1, drawRect = TRUE, main = "", connect = TRUE, 
+                 connect.col='lightgreen', connect.lty=1, connect.lwd=1,
+                 xlab='', ylab='', stats=FALSE, ci.median_mu = TRUE)
 }
 \arguments{
 \item{x}{list of vectors or a dataframe}
@@ -31,6 +32,9 @@ violins(x, by, range = 1.5, h = NULL, ylim = NULL, names =
 \item{drawRect}{logical. the box is drawn if TRUE.}
 \item{main}{main title for the plot.}
 \item{connect}{connects a violin plot series at the medians with line segments}
+\item{connect.col}{line color of the median connecting line segments}
+\item{connect.lty}{line type of the median connecting line segments}
+\item{connect.lwd}{line width of the median connecting line segments}
 \item{xlab}{x axis label}
 \item{ylab}{y axis label}
 \item{stats}{print out statistics}

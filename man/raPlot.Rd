@@ -10,12 +10,12 @@ Many of the parameters to the function play off of this convenient anatomical an
 The plot contains it's own built in significant lines (drawn using the binomial distribution) and displayed via the 'tail' parameter.
 }
 \usage{
-raPlot(a, b, uniques=5, normalize=FALSE,  
+raPlot(a, b=NULL, uniques=5, normalize=FALSE,  
                    nr=0, alpha = 0.01, jitter=FALSE, jit.wgts=NULL,
                    rex=1, flat=TRUE, tail=.5, arms=.5, spine=1, border=NULL, ...)
 }
 \arguments{
-\item{a}{a vector of counts for a.}
+\item{a}{a vector of counts for a.  can also be a matrix with two columns 1 for a and 2 for b.}
 \item{b}{a vector of counts for b.}
 \item{uniques}{a boolean specifying whether or not to plot the library-unique genes (those with zero counts in one or the other library).}
 \item{normalize}{A boolean specifying whether or not to normalize the counts into proportions.}

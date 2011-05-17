@@ -3,10 +3,14 @@
 }
 
 
-raPlot <- function(a, b, uniques=5, normalize=FALSE,  
+raPlot <- function(a, b=NULL, uniques=5, normalize=FALSE,  
                    nr=0, alpha = 0.01, jitter=FALSE, jit.wgts=NULL,
                    rex=1, flat=TRUE, tail=.5, arms=.5, spine=1, border=NULL, ...){
   
+  if(dim(a)[2]==2 & is.null(b)){
+    b <- a[,2]
+    a <- a[,1]
+  }
   ## find the library-unique genes
   a0 <- a==0
   b0 <- b==0
@@ -18,9 +22,13 @@ raPlot <- function(a, b, uniques=5, normalize=FALSE,
     u.epsilon <- function(n) runif(n,min=(.5 - .1 * uniques/5), max=.5)
     a[a0] <- a[a0] + u.epsilon(sum(a0))
     b[b0] <- b[b0] + u.epsilon(sum(b0))
+  }else{  ## remove uniques if specified
+    a <- a[!(a0 | b0)]
+    b <- b[!(a0 | b0)]
   }
 
-  ## spread out the overploted points (randomly for now, by weights eventually)
+
+  ## spread out the overploted points 
   if(as.numeric(jitter)){ 
     if(jitter > .5 | jitter < 0)
       warning('jitter amount (in this context) is best set between 0 and .5') 
@@ -33,17 +41,11 @@ raPlot <- function(a, b, uniques=5, normalize=FALSE,
       b[!b0] <- jitter(b[!b0], amount=jitter)
     }
   }
-  
-  ## remove uniques if specified
-  if(!as.logical(uniques)){
-    a <- a[!(a0 | b0)]
-    b <- b[!(a0 | b0)]
-  }
-
+   
   ## normalize by library sums
   a.norm <- a/sum(a) #a.sum
   b.norm <- b/sum(b) #b.sum
-
+  
   ## calculate (magnitude) fold change ratio and amplitude
   R.norm <- log(a.norm/b.norm, 2)
   A.norm <- .avgLog(a.norm,b.norm)    

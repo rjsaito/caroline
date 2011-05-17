@@ -195,17 +195,26 @@ nerge <- function(l, ...){
      stop('list elements must be either of class data.frame or of type vector')
   if(length(l) < 2)
     stop('list l must have at least 2 elements')
-  if(is.null(names(l)))
-    stop('list l elements must be named')
+  if(is.null(names(l))){
+    warning("each merge element in the list 'l' should have a name. making some up.")
+    names(l) <- letters[1:length(l)]
+  }
   if(!all(sapply(l, function(j) !is.null(rownames(j)) | !is.null(names(j)))))
-    stop('all list elements must have names')
+    stop('all list elements must have named components (dataframes must have row names)')
     
   df <- .vle2df(l,names(l)[1])
   for(e in 2:length(l)){
-    df <- merge(df, .vle2df(l, names(l)[e]), by='rownames', all=T)
+    df <- merge(df, .vle2df(l, names(l)[e]), by='rownames', ...)
     rownames(df) <- df$rownames
   }
   df$rownames <- NULL
+
+
+  ## removing appended colnames if unnecessary
+  orig.names <- sub(paste('\\.[',paste(names(l),collapse=''),']$',sep=''),'', names(df))
+  if(length(orig.names)== length(unique(orig.names)))
+    names(df) <- orig.names
+  
   df
 }
 

@@ -214,6 +214,7 @@ violins <- function (x, by, range = 1.5, h = NULL, ylim = NULL, names = NULL,
                      horizontal = FALSE, col = "transparent", border = "black", lty = 1, 
                      lwd = 1, rectCol = "grey50", colMed = "grey80", pchMed = 19, 
                      at, add = FALSE, wex = 1, drawRect = TRUE, main = "", connect=TRUE,
+                     connect.col='lightgreen', connect.lty=1, connect.lwd=1,
                      xlab="",ylab="", stats=FALSE, ci.median_mu=TRUE) 
   
   ## an improved violin plot by 
@@ -353,7 +354,7 @@ violins <- function (x, by, range = 1.5, h = NULL, ylim = NULL, names = NULL,
       if (connect) {													
         s <- seq(length(datas))											
         s <- s[-length(s)]												
-        segments(at[s], med[s], at[s+1], med[s+1], col= 'lightgreen')
+        segments(at[s], med[s], at[s+1], med[s+1], col= connect.col, lty=connect.lty, lwd=connect.lwd)
       }
 
 
