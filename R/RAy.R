@@ -7,10 +7,11 @@ raPlot <- function(a, b=NULL, uniques=5, normalize=FALSE,
                    nr=0, alpha = 0.01, jitter=FALSE, jit.wgts=NULL,
                    rex=1, flat=TRUE, tail=.5, arms=.5, spine=1, border=NULL, ...){
   
-  if(dim(a)[2]==2 & is.null(b)){
-    b <- a[,2]
-    a <- a[,1]
-  }
+  if(!is.null(dim(a)))
+    if(dim(a)[2]==2 & is.null(b)){
+      b <- a[,2]
+      a <- a[,1]
+    }
   ## find the library-unique genes
   a0 <- a==0
   b0 <- b==0
