@@ -5,9 +5,9 @@
 
 raPlot <- function(a, b=NULL, uniques=5, normalize=FALSE,  
                    nr=0, alpha = 0.01, jitter=FALSE, jit.wgts=NULL,
-                   rex=1, flat=TRUE, tail=.5, arms=.5, spine=1, border=NULL, ...){
+                   rex=1, flat=TRUE, tail=.5, arms=.5, spine=1, border=NULL, plot=TRUE, ...){
   
-  if(!is.null(dim(a)))
+  if(!is.null(dim(a)))    
     if(dim(a)[2]==2 & is.null(b)){
       b <- a[,2]
       a <- a[,1]
@@ -26,8 +26,15 @@ raPlot <- function(a, b=NULL, uniques=5, normalize=FALSE,
   }else{  ## remove uniques if specified
     a <- a[!(a0 | b0)]
     b <- b[!(a0 | b0)]
+    a0.tmp <- a0
+    a0 <- a0[!(a0     | b0)]
+    b0 <- b0[!(a0.tmp | b0)]
   }
-
+ 
+  if(length(a) == 0){
+  	warning('counts table is empty. try including condition unique points. returning an empty set')
+  	invisible(list(R=NULL,A=NULL, sizes=NULL))
+  }else{
 
   ## spread out the overploted points 
   if(as.numeric(jitter)){ 
@@ -52,10 +59,9 @@ raPlot <- function(a, b=NULL, uniques=5, normalize=FALSE,
   A.norm <- .avgLog(a.norm,b.norm)    
   R <- log(a/b,2)
   A <- .avgLog(a,b)
-
-  scale.sizes <- function(A,R,nr) (A + 1) * abs(R-nr)/2 + 20*(A/max(A))  # +1 is for the uniques
-    
   
+  scale.sizes <- function(A,R,nr) (A + 1) * abs(R-nr)/2 + 20*(A/max(A))  # +1 is for the uniques
+      
   ## handle the case where things are normalized
   if(normalize){
     ## point cex sizes 
@@ -77,6 +83,7 @@ raPlot <- function(a, b=NULL, uniques=5, normalize=FALSE,
   if(flat)
     sizes <- 1  
 
+  if(plot){
   ## create the actual plot
   plot(A, R, cex= sizes * rex, ...)
 
@@ -93,8 +100,9 @@ raPlot <- function(a, b=NULL, uniques=5, normalize=FALSE,
   
   if(as.logical(spine))
     segments(min(A)+2, nr, max(A), lwd=spine, col='gray')
-
+  }
   invisible(list(R=R,A=A, sizes=sizes))
+  } #end empty set check if/else
 }
 
 

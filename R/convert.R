@@ -43,9 +43,10 @@ delist <- function(L){
   if(any(nchar(names)==0))
     stop('all list element names must have non zero length')
   
-  for(name in names)
+  for(name in names){
     assign(name, L[[name]], envir=.GlobalEnv)
-
+    ##get(name)$names <- attributes(L[[name]])$names  #hack
+  }
 }
 
 
@@ -53,8 +54,11 @@ delist <- function(L){
 nv <- function(x, name){
 
   if(class(x)=='data.frame'){
-    v <- x[,name]
-    names(v) <- rownames(x)
+    v <- x[,name[1]]
+    if(length(name)==2)
+      names(v) <- x[,name[2]]
+    else
+      names(v) <- rownames(x)
   }else{
     v <- as.vector(x)
     names(v) <- name

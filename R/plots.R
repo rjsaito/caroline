@@ -49,13 +49,17 @@ usr2lims <- function(adj=.04){
 
 ### a better pie function with origin positions ###
 pies <- function(x, show.labels = FALSE, show.slice.labels = FALSE, color.table = NULL, 
-		radii = rep(2,length(x)), x0=NULL, y0=NULL, xlim=c(-1,1), ylim=c(-1,1),
+		radii = rep(2,length(x)), x0=NULL, y0=NULL, 
 		edges = 200,  clockwise = FALSE, 
                 init.angle = if (clockwise) 90 else 0, density = NULL, angle = 45, 
-                border = NULL, lty = NULL, main = NULL, 
+                border = NULL, lty = NULL,  
                 other.color='gray', na.color='white', ...) 
 {
   
+  if(!par()$new){
+    plot(x0, y0, pch='', ...)
+    par(new=TRUE)
+  }
   if(class(x)!='list')
     stop("x must be a list")
   
@@ -71,6 +75,8 @@ pies <- function(x, show.labels = FALSE, show.slice.labels = FALSE, color.table 
   # old -> * (par('csi')/par('pin')[2]) * diff(ylim) * .2 # inches to coords scaling
   
   radii <- radii  
+  xlim <- usr2lims()$x
+  ylim <- usr2lims()$y
   y2x.asp <- diff(xlim)/diff(ylim)
 
   pie.labels <- names(x)
@@ -157,7 +163,6 @@ pies <- function(x, show.labels = FALSE, show.slice.labels = FALSE, color.table 
           }
         }
       }
-      title(main = main)
       if(show.labels)
         text(x0[j],y0[j] + radii[j]+.2, pie.labels[j])
       

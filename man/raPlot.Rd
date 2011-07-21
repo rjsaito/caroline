@@ -7,12 +7,11 @@ The plot derives from a Bland-Altman plot and is also very similar to an MA plot
 The RA plot is unique, however, in it's creative inclusion of the vector-unique 'arms' which are artificially introduced into the plot by adding a <1 epsilon factor before the log function is applied.
 The name RAy comes from the fact that the aforementioned 'uniques' arms addition makes it strongly resemble a geometric ray.  
 Many of the parameters to the function play off of this convenient anatomical analogy.
-The plot contains it's own built in significant lines (drawn using the binomial distribution) and displayed via the 'tail' parameter.
 }
 \usage{
 raPlot(a, b=NULL, uniques=5, normalize=FALSE,  
                    nr=0, alpha = 0.01, jitter=FALSE, jit.wgts=NULL,
-                   rex=1, flat=TRUE, tail=.5, arms=.5, spine=1, border=NULL, ...)
+                   rex=1, flat=TRUE, tail=.5, arms=.5, spine=1, border=NULL, plot=TRUE,  ...)
 }
 \arguments{
 \item{a}{a vector of counts for a.  can also be a matrix with two columns 1 for a and 2 for b.}
@@ -29,17 +28,32 @@ raPlot(a, b=NULL, uniques=5, normalize=FALSE,
 \item{arms}{a numeric or boolean value indicating the line thickness of the two leading straight separator lines of the RAy.}
 \item{spine}{a numeric or boolean value indicating the line thickness of the normalization line (whose y position is specified by mm).}
 \item{border}{a vector of strings used to color the borders of the points.}
+\item{plot}{whether or not to do the actual plot.}
 \item{...}{other parameters passed to plot.}
 }
 \value{
 a RAy plot
 }
 \seealso{
-manta.ra, plotMA, maPlot
+plot.manta, plotMA, maPlot
 }
 \examples{
 
+a <- rnbinom(n=10000, mu=5, size=2)
+b <- rnbinom(n=10000, mu=5, size=2)
 
+## the alternative 
+plot(a,b)
+## the raPlot version
+raPlot(a, b) 
+
+## highlight the condition unique points in the same way as  edgeR's "maPlot"
+RA <- raPlot(a, b, pch='')
+cond.unique <- apply(cbind(a,b), 1, function(d) any(d==0))
+points(RA$A,RA$R, col=c('black','orange')[cond.unique+1])
+
+## try playing with jittering over plotted points
+raPlot(a, b, jitter=.3)
 
 }
 
