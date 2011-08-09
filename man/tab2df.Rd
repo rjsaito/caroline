@@ -41,7 +41,9 @@ a dataframe
   x <- as.table(nv(c(54,34), c('a','b')))
     as.data.frame(x)
   tab2df(x)
-  
+
+  x <- table(a='x',b='y')
+  tab2df(x)
   
   }
 

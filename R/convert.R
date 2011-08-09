@@ -1,14 +1,17 @@
+
+
+
 ## table to dataframe (with names!)
 tab2df <- function(x,...){
 
   is.tabrix <- class(x)[1] %in% c('table','matrix')
   row.nms <- rownames(x)
   
-  if(NCOL(x)>1){
+  if(length(dim(x))>1){ #NCOL(x)>1){
     clm.nms <- colnames(x)
     if(is.tabrix)
       x <- lapply(clm.nms, function(i) x[,i]) 
-  }else{                                      
+  }else{ # is a vector                                     
     if(is.tabrix){ # single column but matrix output
       clm.nms <- row.nms  # assume we want a 2 clmn dataframe
       row.nms <- NULL
@@ -18,7 +21,7 @@ tab2df <- function(x,...){
         row.nms <- names(x) 
       else    # unnamed vector
         row.nms <- 1:length(x)
-    }
+   }
   }
   
   if(!is.null(clm.nms)){

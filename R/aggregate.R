@@ -97,7 +97,12 @@ sstable <- function(x, idx.clmns, ct.clmns=NULL, na.label='NA'){#,exclude=exclud
     }
     
   }
-
+  if(NCOL(tab) == 1 & NROW(tab) == 1){
+    ret <- data.frame(tab[1,1], row.names=rownames(tab))
+    colnames(ret) <- colnames(tab)
+    return(ret)
+  }
+  
   if(NCOL(tab) > 1){
     tab <- tab2df(tab)    
     tab$sum <- apply(tab, 1, sum)
