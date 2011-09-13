@@ -81,7 +81,7 @@ salt.df <- data.frame(salinity=rnorm(25,5), temperature=rnorm(25,25), spec_a=rpo
 ## pull out the colnumn names that are specific to pie wedge numbers	
 salt.spec.nms <- names(salt.df)[grep('spec',names(salt.df))]
 ## turn them into a list
-pie.list <- lapply(1:nrow(salt.df), function(i) as.table(nv(as.matrix(salt.df[i,salt.spec.nms]), salt.spec.nms)))
+pie.list <- lapply(1:nrow(salt.df), function(i) as.table(nv(as.vector(as.matrix(salt.df[i,salt.spec.nms])), salt.spec.nms)))
 names(pie.list)<- letters[1:25]
 with(salt.df, pies(x=pie.list, x0=salinity, y0=temperature, radii=2))
 

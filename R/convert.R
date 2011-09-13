@@ -63,7 +63,9 @@ nv <- function(x, name){
     else
       names(v) <- rownames(x)
   }else{
-    v <- as.vector(x)
+    if(NCOL(x)!=1)
+      stop('x must be unidimentional')
+    v <- x
     names(v) <- name
   }
   v

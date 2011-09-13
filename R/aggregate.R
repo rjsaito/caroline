@@ -1,21 +1,120 @@
  
 
-.aggregateDFrow <- function(x, clmns, funcs=rep('sum',length(clmns))){
+.aggregateDFrow <- function(x, clmns, funcs=c('sum','mean','max','min','nrow','concat','none'), concat.sep=';'){
+  funcs <- match.arg(funcs, several.ok=TRUE)
+
   if(length(clmns)!= length(funcs))
     stop('clmns length does not equal funcs length')
   dfl <- list()
-  for(i in seq(along=clmns))
-    dfl[[clmns[i]]] <- do.call(funcs[i], list(x[,clmns[i]]))
+  for(i in seq(along=clmns)){
+    clmn<- list(x[,clmns[i]])
+    if(funcs[i]=='concat'){
+      clmn <-  append(list(collapse=concat.sep), clmn)
+      funcs[i] <- 'paste'
+    }
+    dfl[[clmns[i]]] <- do.call(funcs[i], clmn)
+  }
   df <- as.data.frame(dfl);
   return(df)  
 }
 
 
-groupBy <- function(df, fact, clmns=names(df), funcs=rep('sum',length(clmns))){
-  if(any(sapply(as.character(fact), nchar)> 255))
-    stop("levels of fact must have no more than 256 characters")
-  do.call(rbind.data.frame, by(df, fact, function(x) .aggregateDFrow(x, clmns, funcs)))
+.rowlist2df <- function(x)
+ do.call(rbind.data.frame, x)
+
+
+.revif <- function(x, rev=FALSE){
+  if(rev){
+    rev(x)
+  }else{
+    x
+  }
 }
+  
+
+bestBy <- function(df, by, clmns=names(df), best, inverse=FALSE, sql=FALSE){
+  if(class(best) != 'character')
+    stop('best column name must be of class caracter')
+  
+
+  if(!sql){    
+    gb <- groupBy(df, by, clmns, aggregation='none')
+    out <- .rowlist2df(lapply(gb, function(g)   g[.revif(order(g[,best]), inverse)[1],]))
+    out[.revif(order(out[,best]), inverse),clmns]				
+  }else{
+    require(RSQLite)
+    tmpfile <- tempfile() 
+    con <- dbConnect(dbDriver("SQLite"), dbname = tmpfile)
+    dbWriteTable(con, 'tab', df)
+    sql <- paste("SELECT * FROM tab AS tab1 WHERE tab1.oid IN 
+                                   (SELECT tab2.oid FROM tab AS tab2
+         				WHERE tab1.",by," = tab2.",by,"
+         				ORDER BY tab2.", best," ", c('ASC','DESC')[inverse+1],"
+     				LIMIT 1)", sep='')
+    out <- dbGetQuery(con, sql)
+    out[.revif(order(out[,best]), inverse),clmns]				
+  }
+}
+
+
+
+
+groupBy <- function(df, by, clmns=names(df), aggregation=c('sum','mean','max','min','nrow','concat','none'), concat.sep=';', sql=FALSE){
+
+  aggregation <- match.arg(aggregation, several.ok=TRUE)
+  
+  if(any(aggregation!='none'))
+    if(length(aggregation) != length(clmns))
+       stop("length of 'aggregation' does not equal length of 'clmns'")
+
+  if(is.character(by)){
+    if(!by %in% names(df)){
+      stop("character argument 'by' not in names of dataframe 'df'")
+    }else{
+       if(!sql)
+         by <- df[,by]
+    }
+  }else{  #not character
+    if(sql)
+      stop('sql version requires character field name for grouping factor')
+  }
+  
+  if(any(sapply(as.character(by), nchar)> 255))
+    stop("levels of by must have no more than 256 characters")
+
+  if(!sql){
+
+    if(any(aggregation=='none')){
+      by(df, by, function(x) x[,clmns])
+    }else{
+      .rowlist2df(
+      by(df, by, function(x) .aggregateDFrow(x, clmns, aggregation))
+      )
+    }
+  }else{
+    if(any(aggregation=='none'))
+      stop('cannot return group by with out agregation for sql version')
+    require(RSQLite)
+    tmpfile <- tempfile() 
+    con <- dbConnect(dbDriver("SQLite"), dbname = tmpfile)
+    dbWriteTable(con, 'tab', df)
+    aggregation <- sub('nrow','count', aggregation)
+    aggregation <- sub('mean','avg', aggregation)
+    select <- paste(paste(aggregation,"(",clmns,") AS ", clmns,'_',aggregation, sep=''), collapse=', ')  #
+    select <- gsub('concat(\\([^\\)])',paste("group_concat\\1,'",concat.sep,"'",sep=''), select) #array_to_string(array_agg(field), '; ') #postgresql
+    select <- gsub('count(\\([^\\)])', 'count(*', select)
+    
+    sql <- paste("SELECT", select, "FROM tab GROUP BY", by)
+    out <- dbGetQuery(con, sql)
+    out
+  }
+}
+
+
+#.dbGroupBy <- function(df, by, clmns, aggregation){
+
+#}
+
 
 regroup <- function(df, old, new, clmns=names(df), funcs=rep('sum',length(clmns)), combine=TRUE){
   

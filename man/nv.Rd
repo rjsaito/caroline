@@ -9,11 +9,11 @@ The '$' or "[," operators for dataframes and tables do not carry along with them
 nv(x, name)
 }
 \arguments{
-\item{x}{The source dataframe, table, or vector}
+\item{x}{The source dataframe, table, vector, or factor}
 \item{name}{The column name you would like to pull out as a named vector. OR the names of the vector (if x is a vector)}
 }
 \value{
-a named vector
+a named vector or factor
 }
 \examples{
 
