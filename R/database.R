@@ -10,20 +10,22 @@ dbWriteTable2 <- function(con, table.name, df, fill.null = TRUE, add.id=TRUE, ro
       n <- last.id.list[[1]]
     df$id <- 1:nrow(df) + n
   }
-  
   ## look for unloadable columns in the df
+  names(df) <- tolower(names(df))
+  names(df) <- gsub("\\.",'_',names(df))
+  
   clmn.match <- match(names(df), fields)
   if(any(is.na(clmn.match)))
     warning(paste("Found '",names(df)[is.na(clmn.match)], "' not in fields of '", table.name,"' table. Omiting.\n", sep=''))
   
-  ## ADD! section here to check for NA values in columns mapped to NOT NULL fields
-  
   ## add missing fields to df
   field.match <- match(fields, names(df))
-  if(fill.null == TRUE){
+  if(sum(is.na(field.match))>0 & fill.null == TRUE){
+    message("creating NAs/NULLs for for fields of table that are missing in your df")
     nl <- as.list(rep(NA, sum(is.na(field.match))))
+    df.nms.orgnl <- names(df)
     df <- cbind(df, nl)
-    names(df) <- c(fields[clmn.match],fields[is.na(field.match)])
+    names(df) <- c(df.nms.orgnl, fields[is.na(field.match)])
   } 	
   
   ## reorder df columns as per field order
@@ -58,9 +60,14 @@ dbWriteTable2 <- function(con, table.name, df, fill.null = TRUE, add.id=TRUE, ro
   df.classes <- sapply(df, class)
   type.mismatches <- names(df.classes)[db.sclasses != df.classes & !na.cols]
   if(length(type.mismatches)>0)
-    warning('Dataframe columns ',paste(type.mismatches,collpase=','),'have type mismatches from their sclass mappings to the database table fields')
+    warning(paste('The dataframe columns:',paste(type.mismatches, collapse=','),'may have type mismatches from their sclass mappings to the database table fields.'))
     
   dbClearResult(r)
+  
+  ## check unique constrains
+  #r <- dbGetQuery(con, paste("SELECT constraint_name FROM information_schema.table_constraints WHERE table_name = '",table.name,"'", sep=''))
+  #if(nrow(df) != length(unique(apply(df[,c('day','file')],1, paste, collapse='.')))
+  #stop
   
   ## load table
   print(paste("loading", table.name, "table to database"))

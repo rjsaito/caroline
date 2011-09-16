@@ -25,6 +25,7 @@ If successful, the ids of the newly added database records (invisible)
 \examples{
 }
 \seealso{
-dbWriteTable
+\link[DBI:dbReadTable]{dbWriteTable}
 }
 
+	

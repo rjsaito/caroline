@@ -15,6 +15,9 @@ nv(x, name)
 \value{
 a named vector or factor
 }
+\seealso{
+\link{vector},\link{name}
+}
 \examples{
 
 ## example 1: pulling a row.named vector out of a dataframe

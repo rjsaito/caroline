@@ -230,7 +230,11 @@ labsegs <- function(x0, y0, x1, y1, buf=.3, ...){
   c0 <- sqrt(a^2 + b^2)
   theta <- atan(b/a)
   theta[a<0] <- theta[a<0] + pi
+  
   c1 <- c0 - buf
+  
+  if(any(c1<0))
+    stop('buffer size too large or annotations too close')
   
   a1 <- c1*cos(theta)
   b1 <- c1*sin(theta)

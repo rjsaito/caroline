@@ -15,6 +15,9 @@ write.delim(df, file, quote = FALSE, row.names = FALSE, sep = "\t", ...)
 \item{sep}{the delimiter between fields.}
 \item{...}{other parameters passed to write.table.}
 }
+\seealso{
+\link{read.delim}
+}
 \value{
 A tab delimited text file
 }

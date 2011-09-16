@@ -17,7 +17,7 @@ mvlabs(df, n=nrow(df), x='x', y='y', l='lab', cols=colors()[grep("dark",colors()
 \item{...}{other paramters passed on to text}
 }
 \seealso{
-locator, identify
+\link{locator},\link{identify},\link{labsegs}
 }
 \value{a series of violin plots}
 \examples{

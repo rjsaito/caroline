@@ -24,7 +24,7 @@ leghead(x, n=7, tabulate=FALSE, colors=TRUE, na.name='NA', na.col = "white", oth
 A truncated dataframe with a new bottom row summarizing all the truncated ones.
 }
 \seealso{
-summary, head, sumSortedTable
+\link{summary}, \link{head}, \link{sstable}
 }
 \examples{
  e <- data.frame(a=runif(12),b=runif(12), z=rep(letters[13:18],2),w=rep(letters[20:23],3))

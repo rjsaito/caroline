@@ -31,7 +31,7 @@ pies(x, show.labels = FALSE, show.slice.labels = FALSE, color.table = NULL,
 \item{...}{other arguments passed to polygon}
 }
 \seealso{
-pie
+\link{pie}
 }
 \value{
 Pie charts as points on a plot

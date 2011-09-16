@@ -1,20 +1,25 @@
  
 
-.aggregateDFrow <- function(x, clmns, funcs=c('sum','mean','max','min','nrow','concat','none'), concat.sep=';'){
+.aggregateDFrow <- function(x, clmns, funcs=c('sum','mean','var','sd','max','min','length','concat','none'), concat.sep=';',...){
   funcs <- match.arg(funcs, several.ok=TRUE)
 
   if(length(clmns)!= length(funcs))
     stop('clmns length does not equal funcs length')
   dfl <- list()
   for(i in seq(along=clmns)){
-    clmn<- list(x[,clmns[i]])
+    args <- list(x[,clmns[i]])
     if(funcs[i]=='concat'){
-      clmn <-  append(list(collapse=concat.sep), clmn)
+      args <-  append(list(collapse=concat.sep), args)
       funcs[i] <- 'paste'
     }
-    dfl[[clmns[i]]] <- do.call(funcs[i], clmn)
+    if(!funcs[i] %in% c('length','paste'))
+      args <- append(args, list(...))
+    dfl[[paste(clmns[i],funcs[i],sep='_')]] <- do.call(funcs[i], args)
   }
   df <- as.data.frame(dfl);
+  names(df) <- gsub('[[:alnum:]]+_length','count', names(df))
+  names(df) <- gsub('paste','concat', names(df))
+
   return(df)  
 }
 
@@ -57,9 +62,7 @@ bestBy <- function(df, by, clmns=names(df), best, inverse=FALSE, sql=FALSE){
 }
 
 
-
-
-groupBy <- function(df, by, clmns=names(df), aggregation=c('sum','mean','max','min','nrow','concat','none'), concat.sep=';', sql=FALSE){
+groupBy <- function(df, by, clmns=names(df), aggregation=c('sum','mean','var','sd','max','min','count','concat','none'), concat.sep=';', sql=FALSE, ...){
 
   aggregation <- match.arg(aggregation, several.ok=TRUE)
   
@@ -87,25 +90,33 @@ groupBy <- function(df, by, clmns=names(df), aggregation=c('sum','mean','max','m
     if(any(aggregation=='none')){
       by(df, by, function(x) x[,clmns])
     }else{
+      aggregation <- sub('count','length', aggregation)
       .rowlist2df(
-      by(df, by, function(x) .aggregateDFrow(x, clmns, aggregation))
+      by(df, by, function(x) .aggregateDFrow(x, clmns, aggregation, ...))
       )
     }
   }else{
     if(any(aggregation=='none'))
       stop('cannot return group by with out agregation for sql version')
+    if(any(aggregation == c('sd','var')))
+      stop('SQLite does not yet support STDDEV or VARIANCE SQL calls')
     require(RSQLite)
     tmpfile <- tempfile() 
     con <- dbConnect(dbDriver("SQLite"), dbname = tmpfile)
     dbWriteTable(con, 'tab', df)
-    aggregation <- sub('nrow','count', aggregation)
     aggregation <- sub('mean','avg', aggregation)
+    
+    #aggregation <- sub('sd','stddev', aggregation)  #not yet supported by SQLite
+    #aggregation <- sub('var','variance', aggregation) #not yet supported by SQLite
+
     select <- paste(paste(aggregation,"(",clmns,") AS ", clmns,'_',aggregation, sep=''), collapse=', ')  #
     select <- gsub('concat(\\([^\\)])',paste("group_concat\\1,'",concat.sep,"'",sep=''), select) #array_to_string(array_agg(field), '; ') #postgresql
     select <- gsub('count(\\([^\\)])', 'count(*', select)
+    select <- gsub('[[:alnum:]]+_count','count', select)
     
     sql <- paste("SELECT", select, "FROM tab GROUP BY", by)
     out <- dbGetQuery(con, sql)
+    rownames(out) <- unique(df[,by])
     out
   }
 }

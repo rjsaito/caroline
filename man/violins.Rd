@@ -41,7 +41,7 @@ violins(x, by, range = 1.5, h = NULL, ylim = NULL, names =
 \item{ci.median_mu}{boolean for 95 pct ci.median and huber.mu M-estimator calculations}
 }
 \seealso{
-vioplot
+\link[vioplot]{vioplot}, \link[sm]{sm.density}
 }
 \value{a series of violin plots}
 \examples{
