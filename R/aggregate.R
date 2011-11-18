@@ -317,8 +317,8 @@ leghead <- function(x, n=7, tabulate=FALSE, colors=TRUE, na.name='NA',na.col='wh
 nerge <- function(l, ...){
   ## named data.frame or vector merge
 
-  if(!all(sapply(l, function(k) class(k) == 'data.frame' | is.vector(k))))
-     stop('list elements must be either of class data.frame or of type vector')
+  if(!all(sapply(l, function(k) class(k) == 'data.frame' | is.vector(k) | is.factor(k))))
+     stop('list elements must be either of class data.frame or of type vector (or factor)')
   if(length(l) < 2)
     stop('list l must have at least 2 elements')
   if(is.null(names(l))){

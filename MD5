@@ -1,15 +1,15 @@
-34734ae9bf6b5619075cdd549e95db72 *DESCRIPTION
+b59b911dd1a164f025f496001c807dd2 *DESCRIPTION
 c7c2981eca93d1a34c3ff8946aa92cd6 *LICENSE
 f35991a8f622053178e39e767dd5752a *NAMESPACE
 22d0f2943a0ff7c16cf5ec79c88c4d58 *R/RAy.R
-393e10f1b3d7a23046284381e468786a *R/aggregate.R
+4f93e60eb72f4e2c8577f41aa386b254 *R/aggregate.R
 c4a7af83b83363d3925eab1a47ad4e17 *R/convert.R
 092f2f9ba9554af8edc3396003a4fe7f *R/database.R
 f9e43e547d746a863817cfc2a2882f93 *R/heatmap.2.R
 55969d76e42801f2ffe1dcdbfdf5bfa8 *R/io.R
 00d2557f2442f7d92a483f139361cc7b *R/math.R
 0c93b04d10128e699cec579070896f4e *R/parallel.R
-805d7f14a40e7bb059c2297e88755b24 *R/plots.R
+8e49128dee4fed9be01fd196b75cf091 *R/plots.R
 f632b7acbc618f0623a0527d963d3aaa *R/spie.R
 96e093449020c0e3487df2671c704a64 *R/string.R
 c66638fa7cc5638ab340f63dec88fb51 *R/test.R
@@ -21,7 +21,7 @@ fc2c05922de41759dbb8fc333c81f920 *man/addFactLevs.Rd
 8a8ed4557e092793c1e87aab9df1f32e *man/delist.Rd
 edcfe19b83edeced5a958528f2ab3201 *man/geomean.Rd
 08666f0b9e57da220d47fcdc18e532cd *man/groupBy.Rd
-0300ff022f6cf2e3a878423a6e8ef4ef *man/hyperplot.Rd
+c793b2688f703a3dd6b43c234a6d219e *man/hyperplot.Rd
 6445ba524d437d43ba4dae424f9149b9 *man/labsegs.Rd
 32b077a023938d095fb7dd0a9917747b *man/leghead.Rd
 0224a5833773f1792050cfeb12719c7b *man/m.Rd
