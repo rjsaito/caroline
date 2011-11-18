@@ -1,6 +1,6 @@
  
 
-.aggregateDFrow <- function(x, clmns, funcs=c('sum','mean','var','sd','max','min','length','concat','none'), concat.sep=';',...){
+.aggregateDFrow <- function(x, clmns, funcs=c('sum','mean','var','sd','max','min','length','concat','none'), concat.sep=';', ...){
   funcs <- match.arg(funcs, several.ok=TRUE)
 
   if(length(clmns)!= length(funcs))
@@ -17,7 +17,7 @@
     dfl[[paste(clmns[i],funcs[i],sep='_')]] <- do.call(funcs[i], args)
   }
   df <- as.data.frame(dfl);
-  names(df) <- gsub('[[:alnum:]]+_length','count', names(df))
+
   names(df) <- gsub('paste','concat', names(df))
 
   return(df)  
@@ -62,14 +62,19 @@ bestBy <- function(df, by, clmns=names(df), best, inverse=FALSE, sql=FALSE){
 }
 
 
-groupBy <- function(df, by, clmns=names(df), aggregation=c('sum','mean','var','sd','max','min','count','concat','none'), concat.sep=';', sql=FALSE, ...){
+groupBy <- function(df, by, clmns=names(df), aggregation=c('sum','mean','var','sd','max','min','count','concat','none'), concat.sep=';', sql=FALSE, full.names=FALSE, ...){
 
   aggregation <- match.arg(aggregation, several.ok=TRUE)
   
   if(any(aggregation!='none'))
     if(length(aggregation) != length(clmns))
-       stop("length of 'aggregation' does not equal length of 'clmns'")
-
+      if(length(aggregation) == 1){
+        warning(paste("automatically extending your only specified aggregation to all ",length(clmns)," clmns"))
+        aggregation <- rep(aggregation, length(clmns))
+      }else{
+        stop("length of 'aggregation' does not equal length of 'clmns'")
+      }
+  
   if(is.character(by)){
     if(!by %in% names(df)){
       stop("character argument 'by' not in names of dataframe 'df'")
@@ -88,12 +93,11 @@ groupBy <- function(df, by, clmns=names(df), aggregation=c('sum','mean','var','s
   if(!sql){
 
     if(any(aggregation=='none')){
-      by(df, by, function(x) x[,clmns])
+      return(by(df, by, function(x) x[,clmns]))
     }else{
       aggregation <- sub('count','length', aggregation)
-      .rowlist2df(
-      by(df, by, function(x) .aggregateDFrow(x, clmns, aggregation, ...))
-      )
+      out <- .rowlist2df(
+               by(df, by, function(x) .aggregateDFrow(x, clmns, funcs=aggregation, ...)))
     }
   }else{
     if(any(aggregation=='none'))
@@ -111,14 +115,21 @@ groupBy <- function(df, by, clmns=names(df), aggregation=c('sum','mean','var','s
 
     select <- paste(paste(aggregation,"(",clmns,") AS ", clmns,'_',aggregation, sep=''), collapse=', ')  #
     select <- gsub('concat(\\([^\\)])',paste("group_concat\\1,'",concat.sep,"'",sep=''), select) #array_to_string(array_agg(field), '; ') #postgresql
-    select <- gsub('count(\\([^\\)])', 'count(*', select)
-    select <- gsub('[[:alnum:]]+_count','count', select)
+    #select <- gsub('count(\\([^\\)])', 'count(*', select)
     
     sql <- paste("SELECT", select, "FROM tab GROUP BY", by)
     out <- dbGetQuery(con, sql)
     rownames(out) <- unique(df[,by])
-    out
+    
   }
+
+  if(!full.names){
+    if(length(unique(clmns)) != ncol(out))
+      warning('selected columns are not unique, cannot use original names. Using full names instead')
+    else
+      names(out) <- clmns
+  }
+  return(out)
 }
 
 
@@ -180,8 +191,8 @@ sstable <- function(x, idx.clmns, ct.clmns=NULL, na.label='NA'){#,exclude=exclud
     ncc <- length(ct.clmns)
     nic <- length(idx.clmns)
   
-    if(ncc > 2 | nic > 2)
-      stop(" can't have more than 2 index or count columns")
+    if(nic > 2)
+      stop("can't have more than 2 index columns")
     if(ncc > 1 & nic > 1)
       stop('cannot have both more than one index and count columns')
        
@@ -326,7 +337,7 @@ nerge <- function(l, ...){
 
 
   ## removing appended colnames if unnecessary
-  orig.names <- sub(paste('\\.[',paste(names(l),collapse=''),']$',sep=''),'', names(df))
+  orig.names <- sub(paste('\\.(',paste(names(l),collapse='|'),')$',sep=''),'', names(df))
   if(length(orig.names)== length(unique(orig.names)))
     names(df) <- orig.names
   

@@ -2,22 +2,26 @@
 \alias{m}
 \title{Regexp Match Operator}
 \description{
-A grep sub like function that actually returns the n back-referenced *matches* 
-(as columns in a datframe of the same length as the input vector). This function
-is more geared towards *extracting* than cleaning ... 
-even though it uses sub (a cleaning function) to do so.
+A grep/sub-like function that returns one or more back-referenced pattern matches in the form of a vector or as columns in a dataframe (respectively).  
+Unlike sub, this function is more geared towards data extraction rather than data cleaning. 
+The name is derived from the popular PERL regular expression 'match' operator function 'm' (eg. 'extraction =~ m/sought_text/'). 
 }
 \usage{
-m(pattern, vect, names="V", types="character")
+m(pattern, vect, names="V", types="character", mismatch=NA, ...)
 }
 \arguments{
 \item{pattern}{A regular expression pattern with at least one back reference.}
 \item{vect}{A string or vector of strings one which to apply the pattern match.}
 \item{names}{The vector of names of the new variables to be created out of vect. Must be the same length as vect.}
-\item{types}{The vector of types of the new variables to be created out of vect. Must be the same lenght as vect.}
+\item{types}{The vector of types of the new variables to be created out of vect. Must be the same length as vect.}
+\item{mismatch}{What do to when no pattern is found.  NA returns NA, TRUE returns original value (currently only implimented for single match, vector returns)}
+\item{...}{other parameters passed on to grep}
 }
 \seealso{
-\code{\link{sub}, \link{gsub},\link{regexpr}, \link{grep}, \link{gregexpr}}.
+\code{\link{sub}, \link{gsub}, \link{regexpr}, \link{grep}, \link{gregexpr}}.
+}
+\value{
+Either a vector or a dataframe depending on the number of backreferences in the pattern.
 }
 \examples{
 

@@ -7,11 +7,14 @@ raPlot <- function(a, b=NULL, uniques=5, normalize=FALSE,
                    nr=0, alpha = 0.01, jitter=FALSE, jit.wgts=NULL,
                    rex=1, flat=TRUE, tail=.5, arms=.5, spine=1, border=NULL, plot=TRUE, ...){
   
-  if(!is.null(dim(a)))    
+  if(!is.null(dim(a))){
+    rownms <- rownames(a)
     if(dim(a)[2]==2 & is.null(b)){
       b <- a[,2]
       a <- a[,1]
     }
+    names(a) <- names(b) <- rownms
+  }  
   ## find the library-unique genes
   a0 <- a==0
   b0 <- b==0
@@ -55,9 +58,9 @@ raPlot <- function(a, b=NULL, uniques=5, normalize=FALSE,
   b.norm <- b/sum(b) #b.sum
   
   ## calculate (magnitude) fold change ratio and amplitude
-  R.norm <- log(a.norm/b.norm, 2)
+  R.norm <- log(b.norm/a.norm, 2)
   A.norm <- .avgLog(a.norm,b.norm)    
-  R <- log(a/b,2)
+  R <- log(b/a,2)
   A <- .avgLog(a,b)
   
   scale.sizes <- function(A,R,nr) (A + 1) * abs(R-nr)/2 + 20*(A/max(A))  # +1 is for the uniques
@@ -101,7 +104,7 @@ raPlot <- function(a, b=NULL, uniques=5, normalize=FALSE,
   if(as.logical(spine))
     segments(min(A)+2, nr, max(A), lwd=spine, col='gray')
   }
-  invisible(list(R=R,A=A, sizes=sizes))
+  invisible(data.frame(A=A, R=R, sizes=sizes)) #, row.names=names(R)
   } #end empty set check if/else
 }
 
@@ -176,3 +179,5 @@ wjitter <- function(x, w, amount=.43){
   out <- do.call(rbind.data.frame, (by(df, round(x), function(z) cbind.data.frame(z, j=z$x + wj(z$w, amount=amount)))))
   out[order(out$r),'j']
 }
+
+

@@ -244,3 +244,118 @@ labsegs <- function(x0, y0, x1, y1, buf=.3, ...){
 
   segments(x0,y0,x1,y1,...)
 }
+
+  
+hyperplot <- function(x, y=NULL, annout, name='hyperplot.image_map', w=72*8, h=72*6, link2tab=TRUE, browse=TRUE, cex=1,...){
+
+  ## generate output paths
+  img.path <- paste(name,'.png',sep='')
+  html.path <- paste(name,'.html',sep='')
+
+  ## create image
+  png(img.path, width=w, height=h)
+
+  if(class(x)=='data.frame')
+    stop('for data.frame input: x and y vectors should be in the annout table with x & y used to specify column names')
+  
+  ## plot
+  if(is.null(y)){
+    xyc <- plot(x, ...)
+    if(ncol(xyc)<2 | ncol(xyc)>3)
+      stop('plot(x) must return a rownamed dataframe or matrix of 2 or 3 columns: x,y and optionally cex (in that order)')
+    x <- xyc[,1]
+    y <- xyc[,2]
+    if(ncol(xyc)==3)
+      cex <- xyc[,3]
+    else
+      cex <- 1
+    all.nms <- rownames(xyc)
+  }else{
+
+    if(all(is.character(c(x,y))) & all(sapply(list(x,y), length)==1)){
+      if(all(c(x,y)%in% names(annout)))
+        all.nms <- rownames(annout)
+      else
+        stop('x and y must exist in annout')
+      
+      x <- annout[,x]
+      y <- annout[,y]
+      all.nms <- rownames(annout)
+    }else{
+      all.nms <- names(x)
+      if(is.null(all.nms))
+        stop('x must be named')
+    }
+    
+    if(!is.numeric(x) | !is.numeric(y) | length(x) != length(y))
+      stop('x and y must be numeric vectors of equal length')
+    plot(x, y, ...)
+
+  }
+ 
+  ## build x, y coordinates, names & point sizes 
+  xy <- data.frame(rnm=all.nms, x=x, y=y, cex=cex)
+  
+  ## grab figure & plot dimentions
+  mai <- par('mai')*72 #margins
+  pin <- par('pin')*72 #plot dim
+  usr <- par('usr')
+  
+  usr.xd <-diff(usr[1:2])
+  usr.yd <-diff(usr[3:4])
+
+  pin.xd <-pin[1]
+  pin.yd <-pin[2]
+
+  ## save image
+  dev.off()
+
+  
+  ## determine outlier points to annotate
+  if(is.data.frame(annout))
+    annout$nm <- rownames(annout)
+  else
+    annout <- data.frame(nm=as.character(annout))
+
+  if('out' %in% names(annout))
+    annout <- subset(annout, out)
+  
+  ## subset coords by only the desired outlier list  
+  xy <- subset(xy, rnm %in% annout$nm)
+
+  ## translate user coordinate space into image output coordinates
+  xy$x <-  (xy$x - usr[1])/usr.xd * pin.xd + mai[2]
+  xy$y <- (-xy$y + usr[4])/usr.yd * pin.yd + mai[3]
+  xy$r <- xy$cex * 3
+
+  ## write HTML map
+  sink(html.path)
+
+  cat('<html>\n')
+
+  cat(paste('<img src="',img.path,'" width="',w,'" height="',h,'" usemap="#',name,'"/>', sep=''),'\n')
+  cat('<br><h5>Outlier Annotation Table</h5>')  
+  cat(paste('<map name="',name,'">',sep=''))    
+  with(xy, cat(paste('<area shape="circle" coords="',x,',',y,',',r,'" href="#',sub(' ','_',rnm),'" title="',rnm,'"/>\n',sep='')),'\n')
+  cat('</map>')
+
+  if(link2tab & class(annout)=='data.frame'){
+    cat('<table border=1>','\n')
+    cat(paste('<tr><th></th>', paste('<th>', names(annout),'</th>',collapse=''), '</tr>\n'))
+    for(i in 1:nrow(annout))
+      cat(paste('<tr><td><a name="',sub(' ','_',annout$nm[i]),'"></a></td>',
+                paste('<td>',annout[i,],'</td>',collapse=''), '</tr>\n',sep=''))
+    cat('</table>','\n')
+  }
+  cat('</html>')
+  cat(rep('<br>',60)) ## so hyperlink jumps don't run into the bottom of the browser window')
+  sink()
+
+  ## open browser 
+  if(browse)
+    browseURL(html.path)
+}
+
+
+
+

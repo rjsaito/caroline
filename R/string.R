@@ -10,8 +10,7 @@ pad <- function(vect,np){
 }
 
 
-
-m <- function(pattern, vect, names="V", types="character"){
+m <- function(pattern, vect, names="V", types="character", mismatch=NA, ...){
   matches <- regexpr(pattern , vect )
   n <- length(gregexpr("[^\\]?)",pattern)[[1]]) #how many groups (non literal perends) does this pattern have
   if(n != length(names) | n != length(types)){
@@ -20,13 +19,19 @@ m <- function(pattern, vect, names="V", types="character"){
     ret <- list() 
     for(i in 1:n){
       this.vect <- as.vector(rep(NA,length(vect), mode=types[i]))
-      this.vect[matches > 0] <- as.vector(sub(paste("(.*)", pattern ,"(.*)",sep=""),paste("\\",i+1,sep=""), vect[matches > 0]), mode=types[i]) 
+      this.vect[matches > 0] <- as.vector(sub(paste("(.*)", pattern ,"(.*)",sep=""),paste("\\",i+1,sep=""), vect[matches > 0], ...), mode=types[i]) 
       ret[[names[i]]] <- this.vect
     }
-    if(n == 1)
-      as.vector(ret[[1]])
-    else
-      as.data.frame(ret)
+    if(n == 1){
+      ret <- as.vector(ret[[1]])
+      if(!is.na(mismatch)){
+       isnomatch <- is.na(ret)
+       ret[isnomatch] <- vect[isnomatch]
+      }
+      return(ret)
+    }else{
+      return(as.data.frame(ret, stringsAsFactors=F))
+    }
   }
 }
 
