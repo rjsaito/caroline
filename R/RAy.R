@@ -14,10 +14,20 @@ raPlot <- function(a, b=NULL, uniques=5, normalize=FALSE,
       a <- a[,1]
     }
     names(a) <- names(b) <- rownms
-  }  
+  }
+  
+  if(any(a < 0 | b < 0))
+    stop('a and b must be postive or zero')  
+    
   ## find the library-unique genes
   a0 <- a==0
   b0 <- b==0
+
+  if(any(0 < a & a < 1) | any(0 < b & b < 1)){
+    warning("non integer counts detected: adding epsilon factor to non-zeros so that min==1")
+    a[!a0] <- a[!a0] + (1-min(a[!a0]))
+    b[!b0] <- b[!b0] + (1-min(b[!b0]))
+  }
   
   ## add an epsilon factor to include uniques in the plot
   if(as.logical(uniques)){
