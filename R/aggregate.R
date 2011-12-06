@@ -107,6 +107,8 @@ groupBy <- function(df, by, clmns=names(df), aggregation=c('sum','mean','var','s
     require(RSQLite)
     tmpfile <- tempfile() 
     con <- dbConnect(dbDriver("SQLite"), dbname = tmpfile)
+    ## sort by 'by' column: important for ordering match to 'unique' row renaming below
+    df <- df[order(df[,by]),]
     dbWriteTable(con, 'tab', df)
     aggregation <- sub('mean','avg', aggregation)
     
@@ -114,8 +116,7 @@ groupBy <- function(df, by, clmns=names(df), aggregation=c('sum','mean','var','s
     #aggregation <- sub('var','variance', aggregation) #not yet supported by SQLite
 
     select <- paste(paste(aggregation,"(",clmns,") AS ", clmns,'_',aggregation, sep=''), collapse=', ')  #
-    select <- gsub('concat(\\([^\\)])',paste("group_concat\\1,'",concat.sep,"'",sep=''), select) #array_to_string(array_agg(field), '; ') #postgresql
-    #select <- gsub('count(\\([^\\)])', 'count(*', select)
+    select <- gsub('concat(\\([^\\)]+)',paste("group_concat\\1,'",concat.sep,"'",sep=''), select) #array_to_string(array_agg(field), '; ') #postgresql
     
     sql <- paste("SELECT", select, "FROM tab GROUP BY", by)
     out <- dbGetQuery(con, sql)
