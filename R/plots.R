@@ -193,7 +193,7 @@ vennMatrix <- function(l){
 
 
 
-text.plot <- function(..., x=1, y=1){
+textplot <- function(..., x=1, y=1){
   plot(x, y, pch='', bty='n',xaxt='n',yaxt='n', xlab='', ylab='')
   text(x, y, ...)
 }

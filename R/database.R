@@ -59,8 +59,8 @@ dbWriteTable2 <- function(con, table.name, df, fill.null = TRUE, add.id=TRUE, ro
   db.sclasses <- nv(db.col.info,'Sclass')
   df.classes <- sapply(df, class)
   type.mismatches <- names(df.classes)[db.sclasses != df.classes & !na.cols]
-  if(length(type.mismatches)>0)
-    warning(paste('The dataframe columns:',paste(type.mismatches, collapse=','),'may have type mismatches from their sclass mappings to the database table fields.'))
+  #if(length(type.mismatches)>0)
+  #  warning(paste('The dataframe columns:',paste(type.mismatches, collapse=','),'may have type mismatches from their sclass mappings to the database table fields.'))
     
   dbClearResult(r)
   

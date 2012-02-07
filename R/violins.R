@@ -331,7 +331,7 @@ violins <- function (x, by, range = 1.5, h = NULL, ylim = NULL, names = NULL,
     if (!add) {
       plot.window(xlim = xlim, ylim = ylim)
       axis(2)
-      axis(1, at = at, label = label)
+      axis(1, at = at, labels = label)
       title(main,xlab=xlab,ylab=ylab)
     }
     box()
@@ -364,7 +364,7 @@ violins <- function (x, by, range = 1.5, h = NULL, ylim = NULL, names = NULL,
     if (!add) {
       plot.window(xlim = ylim, ylim = xlim)
       axis(1)
-      axis(2, at = at, label = label)
+      axis(2, at = at, labels = label)
     }
     box()
     

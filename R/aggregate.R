@@ -1,24 +1,29 @@
  
+ .pasteUnique <- function(x, ...){
+    paste(unique(x), ...)
+ }
+ 
+ #=c('sum','mean','var','sd','max','min','length','concat','none')
 
-.aggregateDFrow <- function(x, clmns, funcs=c('sum','mean','var','sd','max','min','length','concat','none'), concat.sep=';', ...){
-  funcs <- match.arg(funcs, several.ok=TRUE)
+.aggregateDFrow <- function(x, funcs, clmns, distinct=FALSE, collapse=',', ...){
 
+  #funcs <- match.arg(funcs, several.ok=TRUE)
+   
   if(length(clmns)!= length(funcs))
     stop('clmns length does not equal funcs length')
   dfl <- list()
   for(i in seq(along=clmns)){
     args <- list(x[,clmns[i]])
-    if(funcs[i]=='concat'){
-      args <-  append(list(collapse=concat.sep), args)
-      funcs[i] <- 'paste'
+    if(funcs[i]=='paste'){
+      args <-  append(list(collapse=collapse), args)
+      if(distinct)
+        funcs[i] <- '.pasteUnique'
     }
     if(!funcs[i] %in% c('length','paste'))
       args <- append(args, list(...))
     dfl[[paste(clmns[i],funcs[i],sep='_')]] <- do.call(funcs[i], args)
   }
   df <- as.data.frame(dfl);
-
-  names(df) <- gsub('paste','concat', names(df))
 
   return(df)  
 }
@@ -37,13 +42,13 @@
 }
   
 
-bestBy <- function(df, by, clmns=names(df), best, inverse=FALSE, sql=FALSE){
+bestBy <- function(df, by, best, clmns=names(df), inverse=FALSE, sql=FALSE){
   if(class(best) != 'character')
     stop('best column name must be of class caracter')
   
 
   if(!sql){    
-    gb <- groupBy(df, by, clmns, aggregation='none')
+    gb <- groupBy(df, by, clmns, aggregation=NULL)
     out <- .rowlist2df(lapply(gb, function(g)   g[.revif(order(g[,best]), inverse)[1],]))
     out[.revif(order(out[,best]), inverse),clmns]				
   }else{
@@ -62,11 +67,12 @@ bestBy <- function(df, by, clmns=names(df), best, inverse=FALSE, sql=FALSE){
 }
 
 
-groupBy <- function(df, by, clmns=names(df), aggregation=c('sum','mean','var','sd','max','min','count','concat','none'), concat.sep=';', sql=FALSE, full.names=FALSE, ...){
+groupBy <- function(df, by, aggregation, clmns=names(df), collapse=',', distinct=FALSE, sql=FALSE, dots=FALSE, full.names=FALSE, ...){
 
-  aggregation <- match.arg(aggregation, several.ok=TRUE)
+  #aggregation <- match.arg(aggregation, several.ok=TRUE)
   
-  if(any(aggregation!='none'))
+  #if(any(aggregation!='none'))
+  if(!any(is.null(aggregation)))
     if(length(aggregation) != length(clmns))
       if(length(aggregation) == 1){
         warning(paste("automatically extending your only specified aggregation to all ",length(clmns)," clmns"))
@@ -92,18 +98,35 @@ groupBy <- function(df, by, clmns=names(df), aggregation=c('sum','mean','var','s
 
   if(!sql){
 
-    if(any(aggregation=='none')){
+    if(any(is.null(aggregation))){
       return(by(df, by, function(x) x[,clmns]))
     }else{
-      aggregation <- sub('count','length', aggregation)
+      #aggregation <- sub('count','length', aggregation)
       out <- .rowlist2df(
-               by(df, by, function(x) .aggregateDFrow(x, clmns, funcs=aggregation, ...)))
+               by(df, by, function(x) .aggregateDFrow(x, funcs=aggregation, clmns=clmns, collapse=collapse, ...)))
     }
   }else{
-    if(any(aggregation=='none'))
+    if(any(is.null(aggregation)))
       stop('cannot return group by with out agregation for sql version')
-    if(any(aggregation == c('sd','var')))
+    if(any(c('sd','var') %in% aggregation))
       stop('SQLite does not yet support STDDEV or VARIANCE SQL calls')
+   
+    supported.sql.funcs <- c('sum','mean','max','min','length','paste')
+    if(!all(aggregation %in% supported.sql.funcs))
+      stop("In SQL mode, please stick to the supported functions: ", paste(supported.sql.funcs, collapse=','))
+    
+    dots.in.names <- any(grepl('\\.', names(df)))
+    if(dots.in.names){
+      if(dots){
+        ## protect SQL from R's allowance of '.'s in variable names
+        by <- gsub('\\.','_', by)  
+        names(df) <- gsub('\\.','_', names(df))  
+        clmns <- gsub('\\.','_', clmns)
+      }else{   
+        stop("Dots are not allowed in variable names (under SQL mode) unless 'dots' is set")
+      } 
+    }
+    
     require(RSQLite)
     tmpfile <- tempfile() 
     con <- dbConnect(dbDriver("SQLite"), dbname = tmpfile)
@@ -111,17 +134,38 @@ groupBy <- function(df, by, clmns=names(df), aggregation=c('sum','mean','var','s
     df <- df[order(df[,by]),]
     dbWriteTable(con, 'tab', df)
     aggregation <- sub('mean','avg', aggregation)
-    
+    aggregation <- sub('length','count', aggregation)
     #aggregation <- sub('sd','stddev', aggregation)  #not yet supported by SQLite
     #aggregation <- sub('var','variance', aggregation) #not yet supported by SQLite
+    sql.concat <- 'group_concat('
+    sql.collapse <- paste(", '",collapse,"'",sep='')
 
+    if(distinct){
+      sql.concat <- paste(sql.concat, 'DISTINCT ', sep='')
+      if(collapse == ','){
+        sql.collapse <- ''
+      }else{
+        stop("collapse must be ',' when distinct, sql are both TRUE")
+      }
+    }
+	
     select <- paste(paste(aggregation,"(",clmns,") AS ", clmns,'_',aggregation, sep=''), collapse=', ')  #
-    select <- gsub('concat(\\([^\\)]+)',paste("group_concat\\1,'",concat.sep,"'",sep=''), select) #array_to_string(array_agg(field), '; ') #postgresql
+    select <- gsub('paste\\(([^\\)]+)',paste(sql.concat, "\\1", sql.collapse ,sep=''), select) #array_to_string(array_agg(field), '; ') #postgresql
+    
+    ## add the 'by' variable
+    select <- paste(by,"AS sortbyid,", select)
     
     sql <- paste("SELECT", select, "FROM tab GROUP BY", by)
     out <- dbGetQuery(con, sql)
-    rownames(out) <- unique(df[,by])
     
+    rownames(out) <- out$sortbyid
+    out$sortbyid <- NULL
+    
+    ## convert underscores back to '.'s 
+    if(dots.in.names & dots){
+      clmns <- gsub('_','.', clmns)  
+      names(out) <- gsub('_','.', names(out))  
+    }
   }
 
   if(!full.names){
@@ -130,6 +174,8 @@ groupBy <- function(df, by, clmns=names(df), aggregation=c('sum','mean','var','s
     else
       names(out) <- clmns
   }
+  
+  
   return(out)
 }
 
@@ -151,7 +197,7 @@ regroup <- function(df, old, new, clmns=names(df), funcs=rep('sum',length(clmns)
   matches <- match(old, row.names(df))
   groupings[matches[!is.na(matches)]] <- new[!is.na(matches)]
 
-  regroup <- groupBy(df, as.factor(groupings), clmns, funcs)
+  regroup <- groupBy(df, by=as.factor(groupings), funcs, clmns=clmns)
   return(regroup)
 }
 

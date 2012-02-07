@@ -7,7 +7,7 @@ Finding the an extreme record for each group within a dataset is a more challeng
 This function provides a easy interface to that functionality either using R (fast for small data frames) or SQL (fastest for large data)
 }
 \usage{
-bestBy(df, by, clmns=names(df), best, inverse=FALSE, sql=FALSE)
+bestBy(df, by, best, clmns=names(df), inverse=FALSE, sql=FALSE)
 }
 \arguments{
 \item{df}{a data frame.}
