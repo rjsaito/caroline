@@ -12,8 +12,8 @@ addFactLevs(x, new.levs=NA)
 \item{new.levs}{new levels to be added.}
 }
 \seealso{
+\link[base]{factor}, \link[base]{levels}
 }
-\examples{
-}
+
 \keyword{manip}
 

@@ -23,7 +23,7 @@
       args <- append(args, list(...))
     dfl[[paste(clmns[i],funcs[i],sep='_')]] <- do.call(funcs[i], args)
   }
-  df <- as.data.frame(dfl);
+  df <- as.data.frame(dfl, stringsAsFactors=FALSE);
 
   return(df)  
 }
@@ -33,26 +33,34 @@
  do.call(rbind.data.frame, x)
 
 
-.revif <- function(x, rev=FALSE){
-  if(rev){
-    rev(x)
-  }else{
-    x
-  }
-}
-  
-
 bestBy <- function(df, by, best, clmns=names(df), inverse=FALSE, sql=FALSE){
   if(class(best) != 'character')
     stop('best column name must be of class caracter')
+   
+  if(!best %in% clmns){
+    warning("'best' not included in 'clmns', adding it for you")
+    clmns <- c(clmns, best)
+  }
+  byinclmns <- by %in% clmns
+  if(!byinclmns)
+      clmns <- c(clmns, by)
   
-
   if(!sql){    
-    gb <- groupBy(df, by, clmns, aggregation=NULL)
-    out <- .rowlist2df(lapply(gb, function(g)   g[.revif(order(g[,best]), inverse)[1],]))
-    out[.revif(order(out[,best]), inverse),clmns]				
+    gb <- groupBy(df, by, clmns=clmns, aggregation=NULL)
+    out <- .rowlist2df(lapply(gb, function(g)   g[order(g[,best], decreasing=inverse)[1],]))
+    out <- out[order(out[,best], decreasing=inverse),clmns]			
   }else{
     require(RSQLite)
+    
+    dots.in.names <- any(grepl('\\.', names(df)))
+    if(dots.in.names){
+      ## protect SQL from R's allowance of '.'s in variable names
+      by <- gsub('\\.','_', by)  
+      names(df) <- gsub('\\.','_', names(df))  
+      dotpos.clmns <- .gedots(clmns)     #remember
+      clmns <- gsub('\\.','_', clmns)
+    }
+    
     tmpfile <- tempfile() 
     con <- dbConnect(dbDriver("SQLite"), dbname = tmpfile)
     dbWriteTable(con, 'tab', df)
@@ -62,12 +70,42 @@ bestBy <- function(df, by, best, clmns=names(df), inverse=FALSE, sql=FALSE){
          				ORDER BY tab2.", best," ", c('ASC','DESC')[inverse+1],"
      				LIMIT 1)", sep='')
     out <- dbGetQuery(con, sql)
-    out[.revif(order(out[,best]), inverse),clmns]				
+    out <- out[order(out[,best], decreasing = inverse), clmns]
+    
+    ## convert underscores back to '.'s 
+    if(dots.in.names)
+      names(out) <- .redots(names(out), dotpos.clmns) 
+    
+    rownames(out)<- out[,by]
+    if(!byinclmns)
+	out[,by] <- NULL
   }
+  return(out)
 }
 
 
-groupBy <- function(df, by, aggregation, clmns=names(df), collapse=',', distinct=FALSE, sql=FALSE, dots=FALSE, full.names=FALSE, ...){
+## the next two functions compensate for sql turning '.'s in names to '_' 
+## it finds the positions, let's R -> SQL do it's conversion ...
+.gedots <- function(v)
+  lapply(v,function(x) gregexpr('\\.',x)[[1]])
+  
+# ... and then remembers where the original '.'s were and puts them back
+.redots <- function(v, pos.list){
+  for(i in seq(along=v)){
+    if(any(pos.list[[i]] < 0)){
+      next
+    }else{
+     for(pos in pos.list[[i]]){
+       begin <- substr(v[i],1,pos-1)
+       end <- substr(v[i],pos+1, nchar(v[i]))
+       v[i] <-  paste(begin,end, sep='.')
+     }
+    } 
+   }  
+  return(v)
+}
+
+groupBy <- function(df, by, aggregation, clmns=names(df), collapse=',', distinct=FALSE, sql=FALSE, full.names=FALSE, ...){
 
   #aggregation <- match.arg(aggregation, several.ok=TRUE)
   
@@ -117,14 +155,11 @@ groupBy <- function(df, by, aggregation, clmns=names(df), collapse=',', distinct
     
     dots.in.names <- any(grepl('\\.', names(df)))
     if(dots.in.names){
-      if(dots){
         ## protect SQL from R's allowance of '.'s in variable names
-        by <- gsub('\\.','_', by)  
-        names(df) <- gsub('\\.','_', names(df))  
+	by <- gsub('\\.','_', by)  
+	names(df) <- gsub('\\.','_', names(df))  
+        dotpos.clmns <- .gedots(clmns) #remember positions for reinitroduction
         clmns <- gsub('\\.','_', clmns)
-      }else{   
-        stop("Dots are not allowed in variable names (under SQL mode) unless 'dots' is set")
-      } 
     }
     
     require(RSQLite)
@@ -162,15 +197,15 @@ groupBy <- function(df, by, aggregation, clmns=names(df), collapse=',', distinct
     out$sortbyid <- NULL
     
     ## convert underscores back to '.'s 
-    if(dots.in.names & dots){
-      clmns <- gsub('_','.', clmns)  
-      names(out) <- gsub('_','.', names(out))  
+    if(dots.in.names){
+      clmns      <- .redots(clmns     , dotpos.clmns)  
+      names(out) <- .redots(names(out), dotpos.clmns) 
     }
   }
 
   if(!full.names){
     if(length(unique(clmns)) != ncol(out))
-      warning('selected columns are not unique, cannot use original names. Using full names instead')
+      warning('Selected columns are not unique, cannot use original names. Using full names instead')
     else
       names(out) <- clmns
   }

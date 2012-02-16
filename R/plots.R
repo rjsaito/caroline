@@ -401,4 +401,83 @@ hyperplot <- function(x, y=NULL, annout=1:length(x), name='hyperplot.imagemap', 
 
 
 
+.rect3venn <- function(xt){
+
+    lim <- max(xt)
+    nms <- names(dimnames(xt))
+
+    t0 <- xt[1,1,1]
+    t1 <- xt[2,1,1]
+    t2 <- xt[1,2,1]
+    t3 <- xt[1,1,2]
+    t12 <- xt[2,2,1]
+    t23 <- xt[1,2,2]
+    t13 <- xt[2,1,2]
+    t123 <- xt[2,2,2]
+
+    s123 <- sqrt(t123)
+    s12 <- (t12-t123)/s123
+    s23 <- (t23-t123)/s123
+    s13 <- (t13-t123)/s123
+
+    s1 <- t1/(s13+s123+s12)
+    s2 <- t2/(s123+s23)
+    s3 <- t3/(s123+s23)
+
+    s2 <- sqrt(t2)
+    #s3 <- sqrt(t3)
+
+    plot.new()
+    plot.window(c(-lim,lim),c(-lim,lim),xaxs="i",yaxs="i")
+
+    #par(cex=0.9)
+
+    rect(-s13    ,0        ,s123+s12,s1  , col="pink")
+    #rect(0       ,-s23     ,s2     ,s123, col="springgreen")
+    rect(0       ,-s2+s123 ,s2      ,s123, col="springgreen")
+    rect(s123-s3 ,-s23     ,s123    ,s123, col="lightblue")
+    #rect(-s3+s123,-s3+s123 ,s123    ,s123, col="lightblue")
+
+    rect(s123,0   ,s123+s12,s123, col="yellow")
+    rect(-s13,0   ,0       ,s123, col="violet")
+    rect(0   ,-s23,s123    ,0   , col="cyan")
+
+    rect(0   ,0   ,s123    ,s123,col="white")
+
+    text(s123/2           ,s123/2, t123    )
+    text(-s23/2           ,s123/2, t13-t123)
+    text(s123+(s12/2)     ,s123/2, t12-t123)
+    text(s123/2           ,-s23/2, t23-t123)
+
+    text((-s13+s123+s12)/2,s1-3      ,paste(nms[1],"n=",t1))
+
+    text(s2/2             ,-s2+s123+3,paste(nms[2],"n=",t1))
+
+    text(-(s3-s123)/2     ,-s23+3    ,paste(nms[3],"n=",t3))
+}
+
+heatmatrix <- function(x, values=TRUE, clp=c('bottom','top'), rlp=c('left','right'), xadj=.02, yadj=.3, ylab.cntr=FALSE, cex=1, cex.axis=1, ...){
+
+  image(1L:ncol(x), 1L:nrow(x), t(x[nrow(x):1,]),  xaxt='n', yaxt='n', ... )
+
+  if(!is.null(rownames(x))){
+    clp2par <- nv(c(1,2),clp)
+    clp2xadj <- nv(c(-1,1),clp) * xadj
+    clp2adj <- nv(c(1,0),clp); if(ylab.cntr) clp2adj <- nv(rep(.5,2),clp)
+    clp <- match.arg(clp)
+    text(x=par("usr")[clp2par[clp]] +clp2xadj[clp], y=nrow(x):1,
+adj=clp2adj[clp],
+         labels = rownames(x), xpd = TRUE, cex=cex.axis)
+  }
+  if(!is.null(colnames(x))){
+    rlp2par <- nv(c(3,4),rlp)
+    rlp2yadj <- nv(c(-1,1),rlp) * yadj
+    rlp <- match.arg(rlp)
+    text(x=1:ncol(x), y=par("usr")[rlp2par[rlp]] + rlp2yadj[rlp], adj=.5,
+         labels = colnames(x), xpd = TRUE, cex=cex.axis)
+  }
+  if(values)
+     text(col(x),row(x), round(x[nrow(x):1,],2), cex=cex)
+
+}
 

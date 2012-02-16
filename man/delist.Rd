@@ -15,7 +15,7 @@ delist(L)
 new variables in the global environment
 }
 \seealso{
-assign
+\link{assign}
 }
 \examples{
 L <- list(a=c(12,123,1), b='alfalfa', c=c('a','b','c'))

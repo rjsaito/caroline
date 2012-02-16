@@ -13,6 +13,11 @@ pad <- function(vect,np){
 m <- function(pattern, vect, names="V", types="character", mismatch=NA, ...){
   matches <- regexpr(pattern , vect )
   n <- length(gregexpr("[^\\]?)",pattern)[[1]]) #how many groups (non literal perends) does this pattern have
+  if(length(types) == 1 & n > 1)
+    types <- rep(types, n)
+  if(length(names) == 1 & n > 1)
+    names <- paste(names,1:n)
+
   if(n != length(names) | n != length(types)){
     print("ERROR: the number of backreferences in 'pattern' must equal the length of the 'names' and 'types' vectors")
   }else{
@@ -30,7 +35,7 @@ m <- function(pattern, vect, names="V", types="character", mismatch=NA, ...){
       }
       return(ret)
     }else{
-      return(as.data.frame(ret, stringsAsFactors=F))
+      return(as.data.frame(ret, stringsAsFactors=FALSE))
     }
   }
 }

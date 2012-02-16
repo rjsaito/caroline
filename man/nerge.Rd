@@ -12,7 +12,7 @@ nerge(l, ...)
 \item{...}{Other parameters passed on to each sub-merge}
 }
 \seealso{
-\code{\link{merge}}.
+\link{merge}
 }
 \examples{
 

@@ -1,7 +1,7 @@
 \name{bestBy}
 \alias{bestBy}
 \author{David Schruth <dschruth@u.washington.edu>}
-\title{Create a named vector from a dataframe, table or vector}
+\title{Find the "best" record within subgroups of a dataframe.}
 \description{
 Finding the an extreme record for each group within a dataset is a more challenging routine task in R and SQL. 
 This function provides a easy interface to that functionality either using R (fast for small data frames) or SQL (fastest for large data)

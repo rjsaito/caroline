@@ -27,5 +27,3 @@ x <- data.frame(a = I("a \" quote"), b = pi)
 write.delim(x, file = "foo.tab")
 ## End(Not run)
 }
-\keyword{}
-

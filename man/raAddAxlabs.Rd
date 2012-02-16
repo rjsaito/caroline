@@ -16,7 +16,3 @@ raAddAxLabs(conditions=nv(c('a','b'),c('ref','obs')), normalize=T, add=TRUE, lin
 \seealso{
 \code{\link{raPlot}}
 }
-\examples{
-}
-\keyword{}
-

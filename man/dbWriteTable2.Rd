@@ -22,8 +22,7 @@ dbWriteTable2(con, table.name, df, fill.null = TRUE, add.id=TRUE, row.names=FALS
 \value{
 If successful, the ids of the newly added database records (invisible)
 }
-\examples{
-}
+
 \seealso{
 \link[DBI:dbReadTable]{dbWriteTable}
 }

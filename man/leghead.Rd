@@ -33,4 +33,3 @@ lh <- leghead(tab)
 plot(x=lh$a, y=lh$b, cex=lh$sum*3, col=lh$color, pch=20)
 legend('topleft',legend=rownames(lh), col=lh$color, pch=20)
 }
-\keyword{}

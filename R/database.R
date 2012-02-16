@@ -1,5 +1,6 @@
 dbWriteTable2 <- function(con, table.name, df, fill.null = TRUE, add.id=TRUE, row.names=FALSE, pg.update.seq=FALSE, ...){
   fields <- dbListFields(con, table.name)
+  fields <- fields[!grepl('\\.\\.pg\\.dropped',fields)]
   
   ## add id column if missing
   if(add.id){

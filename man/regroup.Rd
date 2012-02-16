@@ -14,8 +14,6 @@ regroup(df, old, new, clmns, funcs=rep('sum',length(clmns)), combine=TRUE)
 \item{funcs}{the functions to perform on the output (default is to sum) .}
 \item{combine}{Determines wether to combine with existing groupings or to start fresh.}
 }
-\seealso{
-}
 \value{
 a dataframe with number of rows equal to the number of factor levels in 'new'
 }

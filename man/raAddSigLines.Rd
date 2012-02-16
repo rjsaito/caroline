@@ -19,7 +19,3 @@ raAddSigLines(n, end=20, alpha=1e-3, nr=0, A.shift=0, plot=FALSE, ...)
 \seealso{
 \code{\link{raPlot}}
 }
-\examples{
-}
-\keyword{}
-

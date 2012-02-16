@@ -24,7 +24,7 @@ hyperplot(x, y = NULL, annout = 1:length(x),
 \item{...}{other paramters passed on to plot()}
 }
 \seealso{
-imagemap(imagemap),imageMap(Rgraphviz),\link{browseURL}
+\link[geneplotter]{imageMap},\link{browseURL}
 }
 \value{HTML page with annotation mapped image}
 \examples{
