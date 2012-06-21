@@ -12,9 +12,12 @@ violins(x, by, range = 1.5, h = NULL, ylim = NULL, names =
                  NULL, horizontal = FALSE, col = "transparent", border
                  = "black", lty = 1, lwd = 1, rectCol = "grey50",
                  colMed = "grey80", pchMed = 19, at, add = FALSE, wex =
-                 1, drawRect = TRUE, main = "", connect = TRUE, 
-                 connect.col='lightgreen', connect.lty=1, connect.lwd=1,
-                 xlab='', ylab='', stats=FALSE, ci.median_mu = TRUE)
+                 1, drawRect = TRUE, main = "", xlab = "", ylab = "",
+                 connect = c("median", "mean", "hubermu", "deciles"),
+                 SD.or.SE = c("SD"), connectcol = c("lightblue",
+                 "cyan", "darkred", "grey"), las = 2, stats = FALSE,
+                 quantiles = c(0.1, 0.9), CImed = TRUE, deciles = TRUE)
+
 }
 \arguments{
 \item{x}{list of vectors or a dataframe}
@@ -32,13 +35,15 @@ violins(x, by, range = 1.5, h = NULL, ylim = NULL, names =
 \item{drawRect}{logical. the box is drawn if TRUE.}
 \item{main}{main title for the plot.}
 \item{connect}{connects a violin plot series at the medians with line segments}
-\item{connect.col}{line color of the median connecting line segments}
-\item{connect.lty}{line type of the median connecting line segments}
-\item{connect.lwd}{line width of the median connecting line segments}
+\item{connectcol}{line color of the median connecting line segments}
 \item{xlab}{x axis label}
 \item{ylab}{y axis label}
 \item{stats}{print out statistics}
-\item{ci.median_mu}{boolean for 95 pct ci.median and huber.mu M-estimator calculations}
+\item{SD.or.SE}{Boolean for standard deviation or standard error}
+\item{las}{axis tick mark labels orientation}
+\item{quantiles}{map any pair of quantiles (as dotted box) in addition to Q1 & Q3, but are not shown when "c(0,0)" and arg is passed to descriptive stats when 'stats'=TRUE}
+\item{CImed}{portrays 95 percent confidence intervals for the median (as solid box)}
+\item{deciles}{maps deciles 0.1:0.9 (as thin lines) independently of 'quantiles' and can be connected when 2 or more variables are plotted.}
 }
 \seealso{
 vioplot(vioplot), \link[sm]{sm.density}

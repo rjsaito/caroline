@@ -12,7 +12,7 @@ pad <- function(vect,np){
 
 m <- function(pattern, vect, names="V", types="character", mismatch=NA, ...){
   matches <- regexpr(pattern , vect )
-  n <- length(gregexpr("[^\\]?)",pattern)[[1]]) #how many groups (non literal perends) does this pattern have
+  n <- length(gregexpr("[^\\])",pattern)[[1]]) #how many groups (non literal perends) does this pattern have
   if(length(types) == 1 & n > 1)
     types <- rep(types, n)
   if(length(names) == 1 & n > 1)

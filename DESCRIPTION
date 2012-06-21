@@ -1,12 +1,12 @@
 Package: caroline
-Version: 0.7.2
-Date: 2012-02-16
+Version: 0.7.4
+Date: 2012-06-21
 Title: A Collection of Database, Data Structure, Visualization, and
         Utility Functions for R
 Author: David M. Schruth <dschruth@u.washington.edu>
 Maintainer: David M. Schruth <dschruth@u.washington.edu>
 Depends: R (>= 1.8.0)
-Suggests: sm, RSQLite, grid
+Suggests: sm, MASS, RSQLite, grid
 Description: The caroline R library contains dozens of functions useful
         for: database migration (dbWriteTable2), database style joins &
         aggregation (nerge, groupBy & bestBy), data structure
@@ -20,6 +20,6 @@ Description: The caroline R library contains dozens of functions useful
         propagation of row, column and vector names in most functions.
 License: GPL (>= 2)
 LazyLoad: yes
-Packaged: 2012-05-08 20:17:20 UTC; dschruth
+Packaged: 2012-06-22 17:29:48 UTC; dschruth
 Repository: CRAN
-Date/Publication: 2012-05-09 04:06:53
+Date/Publication: 2012-06-22 17:41:14

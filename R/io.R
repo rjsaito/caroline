@@ -10,10 +10,10 @@ write.delim <- function(df, file, quote=FALSE, row.names=FALSE, sep='\t', ...){
 #}
 
 
-read.tab <- function(file, check.row.ct=TRUE, stringsAsFactors=FALSE, quote="", ...){
-  out <- read.delim(file, quote=quote, stringsAsFactors=stringsAsFactors, ...)
+read.tab <- function(file, check.row.ct=TRUE, stringsAsFactors=FALSE, quote="", header=TRUE, ...){
+  out <- read.delim(file, quote=quote, stringsAsFactors=stringsAsFactors, header=header, ...)
   if(check.row.ct){
-    line.ct <- length(count.fields(file)) - as.integer(header) 
+    line.ct <- length(count.fields(file, comment.char='')) - as.integer(header) 
     if(nrow(out) != line.ct)
       stop(paste("Number of rows in dataframe (",nrow(out),") doesn't equal (non-header) line count (", line.ct,")",sep=''))
   }
