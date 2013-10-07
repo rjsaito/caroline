@@ -10,8 +10,8 @@ Many of the parameters to the function play off of this convenient anatomical an
 }
 \usage{
 raPlot(a, b=NULL, uniques=5, normalize=FALSE,  
-                   nr=0, alpha = 0.01, jitter=FALSE, jit.wgts=NULL,
-                   rex=1, flat=TRUE, tail=.5, arms=.5, spine=1, border=NULL, plot=TRUE,  ...)
+        nr=0, alpha = 0.01, jitter=FALSE, jit.wgts=NULL,
+        rex=1, flat=TRUE, tail=.5, arms=.5, spine=1, border=NULL, plot=TRUE,  ...)
 }
 \arguments{
 \item{a}{a vector of counts for a.  can also be a matrix with two columns 1 for a and 2 for b.}

@@ -7,7 +7,8 @@ The function matches and rearranges columns of the dataframe to database feilds 
 There also exists support for updating of the PostgreSQL specific sequence for tables with auto incrementing primary keys.
 }
 \usage{
-dbWriteTable2(con, table.name, df, fill.null = TRUE, add.id=TRUE, row.names=FALSE, pg.update.seq=FALSE, ...)
+dbWriteTable2(con, table.name, df, fill.null = TRUE, add.id=TRUE, 
+                   row.names=FALSE, pg.update.seq=FALSE, ...)
 }
 \arguments{
 \item{con}{connection.}

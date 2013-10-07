@@ -35,23 +35,6 @@ tab2df <- function(x,...){
 }
 
 
-## turns a named list into objects in the global environment 
-delist <- function(L){
-  
-  names <- names(L)
-  
-  if(is.null(names))
-    stop('list elements must have names')
-  
-  if(any(nchar(names)==0))
-    stop('all list element names must have non zero length')
-  
-  for(name in names){
-    assign(name, L[[name]], envir=.GlobalEnv)
-    ##get(name)$names <- attributes(L[[name]])$names  #hack
-  }
-}
-
 
 
 nv <- function(x, name){

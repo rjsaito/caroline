@@ -17,9 +17,5 @@ plotClock(hour, minute, x0 = 0, y0 = 0, r = 1)
 \value{
 a plot of a clock
 }
-\examples{
-plot(0,0, xlim=c(-1,1), ylim=c(-1,1),pch='')
-plotClock(4, 20)
-}
 \keyword{graphs}
 

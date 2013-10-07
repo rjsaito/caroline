@@ -1,6 +1,5 @@
 \name{geomean}
 \alias{geomean}
-\author{ David Schruth <dschruth@u.washington.edu>}
 \title{Calculate the Geometric Mean}
 \description{
 A trivial one-line function for exp(mean(log()))

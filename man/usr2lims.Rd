@@ -1,6 +1,5 @@
 \name{usr2lims}
 \alias{usr2lims}
-\author{David Schruth <dschruth@u.washington.edu>}
 \title{Grab and adjust the current plot dimensions}
 \description{
 This is a simple function which grabs the current plot dimentions and adjusts them by shrinking them by 4% in each direction.

@@ -1,9 +1,9 @@
 \name{nv}
 \alias{nv}
-\author{David Schruth <dschruth@u.washington.edu>}
+\author{David Schruth}
 \title{Create a named vector from a dataframe, table or vector}
 \description{
-The '$' or "[," operators for dataframes and tables do not carry along with them the row names.  This function provides a solution for this problem.  Optionally, you can pass a vector to x and use name to name it (great for default parameters)
+The '$' or "[," operators for dataframes and tables do not carry along with them the row names.  This function provides a solution for this problem.  Additionally this function will accept a vector of values and a corresponding vector of value names--an ideal, in-line way for setting named-vectors as default parameters in new functions.)
 }
 \usage{
 nv(x, name)

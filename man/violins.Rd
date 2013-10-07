@@ -1,7 +1,7 @@
 \name{volins}
 \alias{violins}
 \author{Daniel Adler <dadler@uni-goettingen.de>,
-	 David Schruth <dschruth@u.washington.edu>,
+	 David Schruth,
 	 Dave McArthur <dmca@ucla.edu>}
 \title{Plot a Series of Vioplot Violins}
 \description{

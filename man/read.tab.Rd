@@ -7,7 +7,8 @@ Two non-standard defaults have been set: stringsAsFactors=TRUE, quote="".
 An additional parameter "check.row.ct", triggering a count.fields call, has been added to further ensure the integrity of large data files.
 }
 \usage{
-read.tab(file, check.row.ct = TRUE, stringsAsFactors = FALSE, quote = "", header=TRUE, ...)
+read.tab(file, check.row.ct = TRUE, stringsAsFactors = FALSE, 
+               quote = "", header=TRUE, ...)
 }
 \arguments{
 \item{file}{the name of the file which the data are to be read from.}

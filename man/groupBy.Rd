@@ -4,7 +4,8 @@
 \description{
 The R equvalent of a SQL 'group by' call.  }
 \usage{
-groupBy(df, by, aggregation,  clmns=names(df), collapse=',', distinct=FALSE, sql=FALSE, full.names=FALSE, ...)
+groupBy(df, by, aggregation,  clmns=names(df), collapse=',',
+                distinct=FALSE, sql=FALSE, full.names=FALSE, ...)
 }
 \arguments{
 \item{df}{a data frame.}
@@ -24,17 +25,23 @@ an summary/aggregate dataframe
 \link[stats]{aggregate}, \link{bestBy}
 }
 \examples{
-df <- data.frame(a=runif(12),b=c(runif(11),NA), z=rep(letters[13:18],2),w=rep(letters[20:23],3))
+df <- data.frame(a=runif(12),b=c(runif(11),NA), 
+                 z=rep(letters[13:18],2),w=rep(letters[20:23],3))
 
-groupBy(df=df, by='w', clmns=c(rep(c('a','b'),3),'z','w'), aggregation=c('sum','mean','var','sd','min','max','paste','length'), full.names=TRUE, na.rm=TRUE)
+groupBy(df=df, by='w', clmns=c(rep(c('a','b'),3),'z','w'), 
+ aggregation=c('sum','mean','var','sd','min','max','paste','length'), 
+ full.names=TRUE, na.rm=TRUE)
 # or using SQLite
-groupBy(df=df, by='w', clmns=c(rep(c('a','b'),2),'z','w'), aggregation=c('sum','mean','min','max','paste','length'), full.names=TRUE, sql=TRUE)
+groupBy(df=df, by='w', clmns=c(rep(c('a','b'),2),'z','w'), 
+        aggregation=c('sum','mean','min','max','paste','length'), 
+        full.names=TRUE, sql=TRUE)
 
 
 ## passing a custom function
 meantop <- function(x,n=2, ...)
   mean(x[order(x, decreasing=TRUE)][1:n], ...)
   
-groupBy(df, by='w', aggregation=rep(c('mean','max','meantop'),2), clmns=rep(c('a','b'),3), na.rm=TRUE)
+groupBy(df, by='w', aggregation=rep(c('mean','max','meantop'),2), 
+                    clmns=rep(c('a','b'),3), na.rm=TRUE)
 
 }

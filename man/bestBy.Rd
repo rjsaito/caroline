@@ -1,6 +1,6 @@
 \name{bestBy}
 \alias{bestBy}
-\author{David Schruth <dschruth@u.washington.edu>}
+\author{David Schruth}
 \title{Find the "best" record within subgroups of a dataframe.}
 \description{
 Finding the an extreme record for each group within a dataset is a more challenging routine task in R and SQL. 

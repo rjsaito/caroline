@@ -26,7 +26,8 @@ Either a vector or a dataframe depending on the number of backreferences in the 
 \examples{
 
 ## single vector output examples
-m(pattern="asdf.([A-Z]{4}).", vect=c('asdf.AS.fds','asdf.ABCD.asdf', '12.ASDF.asdf','asdf.REWQ.123'))
+m(pattern="asdf.([A-Z]{4}).", 
+  vect=c('asdf.AS.fds','asdf.ABCD.asdf', '12.ASDF.asdf','asdf.REWQ.123'))
 
 
 Rurls <- c('http://www.r-project.org',    'http://cran.r-project.org',
@@ -37,7 +38,8 @@ m(pattern="http://([a-z]+).r-project.org", vect=Rurls)
 # dataframe output examples
 
 data(mtcars)
-m(pattern="^([A-Za-z]+) ?(.*)$", vect=rownames(mtcars), names=c('make','model'), types=rep('character',2))
+m(pattern="^([A-Za-z]+) ?(.*)$", 
+  vect=rownames(mtcars), names=c('make','model'), types=rep('character',2))
 
 
 }

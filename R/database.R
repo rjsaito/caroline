@@ -54,7 +54,7 @@ dbWriteTable2 <- function(con, table.name, df, fill.null = TRUE, add.id=TRUE, ro
   prec.reqd <- db.precisions > 0
   too.long <- db.precisions[prec.reqd] < df.nchars[prec.reqd]
   if(any(too.long))
-    stop(paste("Didn't load df because fields", paste(names(db.nchars)[prec.reqd][too.long],collapse=', '),'were too long'))
+    stop(paste("Didn't load df because fields", paste(names(df.nchars)[prec.reqd][too.long],collapse=', '),'were too long'))
 
   ## check for type mismatches
   db.sclasses <- nv(db.col.info,'Sclass')

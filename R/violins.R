@@ -13,7 +13,8 @@ stats <- function (x, by, quantiles=c(.25,.75))
 		 a <- as.character(by)
 		    for (k in 1:length(a)) {		
 			q<-a[[k]]
-			a[[k]]<-recode(q,"NA='missing'")
+            q <- q[is.na(q)]<- 'missing' # work around for missing 'recode'
+			a[[k]]<- q # recode(q,"NA='missing'")  #car package function	
 			}
 		 by<-a
       x<-.cat2list(x[order(by)],sort(by))
@@ -277,7 +278,7 @@ violins <- function (x, by, range = 1.5, h = NULL, ylim = NULL, names = NULL,
   ## an improved violin plot ... version 6/4/12
   ## Dave McArthur, David Geffin School of Medicine at UCLA   dmca <at> ucla.edu
   ## adapted from package 'caroline'  
-  ## David M. Schruth <dschruth at u.washington.edu>
+  ## David M. Schruth
   ## who migrated the function out of the vioplot library
   ##
   ## Includes 95% ci.median and huber.mu M-estimator, 

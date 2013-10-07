@@ -1,9 +1,9 @@
 \name{sstable}
 \alias{sstable}
-\author{David Schruth <dschruth@u.washington.edu>}
+\author{David Schruth}
 \title{Sum Sorted Tabulation}
 \description{
-A wrapper for the table command that also calculates the row-wise sum and sorts by the new column.  
+A wrapper for the "table()" function that also calculates the row-wise sum and sorts by the new column.  
 }
 \usage{
 sstable(x, idx.clmns, ct.clmns = NULL, na.label = "NA")
@@ -31,7 +31,8 @@ A dataframe sorted by the count columns.
   sstable(e, 'z', c('a','b'))
   e <- data.frame(a=10,b=0, z=NA, w=NA)
   sstable(e, 'z', c('a','b'))
-  e <- data.frame(a=runif(10),b=runif(10),m=rep(c('one','two'),5), z=factor(rep('z',10), levels=c('z','x')))
+  e <- data.frame(a=runif(10),b=runif(10),m=rep(c('one','two'),5), 
+                  z=factor(rep('z',10), levels=c('z','x')))
   sstable(e, idx.clmns=c('m','z'))
   
   

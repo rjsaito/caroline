@@ -1,6 +1,6 @@
 makeElipseCoords <- function(x0 = 0, y0 = 0, b = 1, a = 1, alpha = 0, pct.range = c(0,1), len = 50){
   rad.range <- 2 * pi * pct.range
-  theta <- seq(rad.range[1], rad.range[2], length=(len))
+  theta <- seq(rad.range[1], rad.range[2], length.out=len)
   x <- x0 + a * cos(theta) * cos(alpha) - b * sin(theta) * sin(alpha)
   y <- y0 + a * cos(theta) * sin(alpha) + b * sin(theta) * cos(alpha)
   return(tab2df(cbind(x,y)))
@@ -9,9 +9,12 @@ makeElipseCoords <- function(x0 = 0, y0 = 0, b = 1, a = 1, alpha = 0, pct.range 
 
 plotClock <- function(hour, minute, x0 = 0, y0 = 0, r = 1){  
   
-  circleXY <- makeElipseCoords(x0 = x0, y0 = y0, b = 1.1*r, a = 1.1*r, alpha = 0, pct.range = c(0,1), len = 50)
-  quarHourTickMarksXY <- makeElipseCoords(x0 = x0, y0 = y0, b = 1.05*r, a = 1.05*r, alpha = (pi/2), pct.range = c((12*4-1)/(12*4),0), len = 12*4)
-  hourLabelsXY <- makeElipseCoords(x0 = x0, y0 = y0, b = .9*r, a = .9*r, alpha = (pi/2), pct.range = c(11/12,0), len = 12)
+  circleXY <- makeElipseCoords(x0 = x0, y0 = y0, b = 1.1*r, a = 1.1*r, alpha = 0, 
+                               pct.range = c(0,1), len = 50)
+  quarHourTickMarksXY <- makeElipseCoords(x0 = x0, y0 = y0, b = 1.05*r, a = 1.05*r, alpha = (pi/2), 
+                               pct.range = c((12*4-1)/(12*4),0), len = 12*4)
+  hourLabelsXY <- makeElipseCoords(x0 = x0, y0 = y0, b = .9*r, a = .9*r, alpha = (pi/2), 
+                               pct.range = c(11/12,0), len = 12)
 
   polygon(circleXY)
   text(hourLabelsXY[,1],hourLabelsXY[,2],seq(1,12), cex=.5)
@@ -19,12 +22,12 @@ plotClock <- function(hour, minute, x0 = 0, y0 = 0, r = 1){
 
   minuteV <- minute/60
   minuteVXY <- makeElipseCoords(x0 = x0, y0 = y0, b = r, a = r, alpha = 0, 
-  				pct.range =  (.25 - minuteV), len = 1)
+  				               pct.range =  (.25 - rep(minuteV,2)), len = 1)
   segments(x0,y0,minuteVXY$x[1],minuteVXY$y[1])
 
   hourV <- hour/12
   hourVXY <- makeElipseCoords(x0 = x0, y0 = y0, b = .7*r, a =.7*r, alpha = 0, 
-  				pct.range = (.25 - c(hourV,hourV)), len = 1)
+  				               pct.range = (.25 - rep(hourV,2)), len = 1)
   segments(x0,y0,hourVXY$x,hourVXY$y)  
 
 }
@@ -347,8 +350,8 @@ hyperplot <- function(x, y=NULL, annout=1:length(x), name='hyperplot.imagemap', 
     stop("'link' must be either 'none', 'internal' or a column name of annout")
   
   if('out' %in% names(annout))
-    annout <- subset(annout, out)
-  
+    annout <- annout[annout$out, ]
+
   ## subset coords by only the desired outlier list  
   map <- subset(map, idx %in% annout$nm)
   
