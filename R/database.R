@@ -50,7 +50,6 @@ dbWriteTable2 <- function(con, table.name, df, fill.null = TRUE, add.id=TRUE, ro
   
   ## check for length mismatches    
   db.precisions <- nv(db.col.info, 'precision')
-  if(add.id) db.precisions = db.precisions[names(db.precisions) != "id"]
   df.nchars <- sapply(df, function(c) max(nchar(c), na.rm = T))
   prec.reqd <- db.precisions > 0
   too.long <- db.precisions[prec.reqd] < df.nchars[prec.reqd]
