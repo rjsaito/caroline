@@ -50,12 +50,13 @@ dbWriteTable2 <- function(con, table.name, df, fill.null = TRUE, add.id=TRUE, ro
   
   ## check for length mismatches    
   db.precisions <- nv(db.col.info, 'precision')
-  df.nchars <- sapply(df, function(c) max(nchar(c)))
+  if(add.id == T) db.precisions = db.precisions[names(db.precisions) != "id"]
+  df.nchars <- sapply(df, function(c) max(nchar(c), na.rm = T))
   prec.reqd <- db.precisions > 0
   too.long <- db.precisions[prec.reqd] < df.nchars[prec.reqd]
   if(any(too.long))
     stop(paste("Didn't load df because fields", paste(names(df.nchars)[prec.reqd][too.long],collapse=', '),'were too long'))
-
+    
   ## check for type mismatches
   db.sclasses <- nv(db.col.info,'Sclass')
   df.classes <- sapply(df, class)
